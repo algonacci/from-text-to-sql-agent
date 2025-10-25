@@ -133,7 +133,9 @@ Classification:"""
             max_tokens=50  # We only need one word
         )
 
-        result = response.choices[0].message.content.strip().lower()
+        # save for gemini
+        # result = response.choices[0].message
+        result = response.choices[0].message.content
 
         # Fallback: ensure valid output
         if result not in ["query", "schema_info"]:
@@ -287,18 +289,48 @@ SQL Query:"""
         )
 
         query = response.choices[0].message.content.strip()
+        print(f"[DEBUG] Raw LLM response: {repr(query[:200])}")  # Print first 200 chars
 
-        # Fallback: Validate the query starts with SELECT
-        if not query.upper().startswith("SELECT"):
-            # Try to extract SELECT statement if wrapped in other text
-            lines = query.split('\n')
-            for line in lines:
-                if line.strip().upper().startswith("SELECT"):
-                    return line.strip()
+        # Multiple cleaning attempts
+        # 1. Try clean_sql function
+        query_cleaned = clean_sql(query)
+        print(f"[DEBUG] After clean_sql: {repr(query_cleaned[:200])}")
+
+        # 2. Try to find SELECT statement anywhere in the text
+        import re
+        # Pattern to match SELECT queries (case insensitive, multiline)
+        select_pattern = r'(SELECT\s+.*?)(?:;|\Z)'
+        match = re.search(select_pattern, query_cleaned, re.IGNORECASE | re.DOTALL)
+
+        if match:
+            extracted_query = match.group(1).strip()
+            print(f"[DEBUG] Extracted query via regex: {repr(extracted_query[:200])}")
+            return extracted_query
+
+        # 3. Line-by-line search for SELECT
+        if not query_cleaned.upper().startswith("SELECT"):
+            print(f"[DEBUG] Query doesn't start with SELECT, trying line-by-line...")
+            lines = query_cleaned.split('\n')
+            for i, line in enumerate(lines):
+                stripped = line.strip()
+                if stripped.upper().startswith("SELECT"):
+                    # Try to get multi-line SELECT if needed
+                    remaining_lines = '\n'.join(lines[i:])
+                    select_match = re.search(select_pattern, remaining_lines, re.IGNORECASE | re.DOTALL)
+                    if select_match:
+                        result = select_match.group(1).strip()
+                        print(f"[DEBUG] Found SELECT starting at line {i}: {repr(result[:200])}")
+                        return result
+                    else:
+                        print(f"[DEBUG] Found SELECT at line {i}: {repr(stripped[:200])}")
+                        return stripped
+
             # If no valid SELECT found, return error query
+            print("[DEBUG] No valid SELECT statement found in response")
+            print(f"[DEBUG] Full cleaned response: {repr(query_cleaned)}")
             return "SELECT 'Error: Invalid query generated' as error_message"
 
-        return query
+        return query_cleaned
     except Exception as e:
         raise RuntimeError(f"Gagal generate SQL query: {str(e)}")
 

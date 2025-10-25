@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL Agent - Web Interface</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px 0;
+      }
+
+      .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      .header-section h1 {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        animation: pulse 2s infinite;
+      }
+
+      .status-connected .status-indicator {
+        background: #198754;
+      }
+
+      .status-disconnected .status-indicator {
+        background: #dc3545;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      .db-url-display {
+        background: #1e1e1e;
+        color: #4ec9b0;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+        word-break: break-all;
+        border: 1px solid #333;
+      }
+
+      .sql-box {
+        background: #1e1e1e;
+        color: #ce9178;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.95em;
+        overflow-x: auto;
+        border: 1px solid #333;
+      }
+
+      .markdown-content {
+        line-height: 1.8;
+      }
+
+      .markdown-content h1,
+      .markdown-content h2,
+      .markdown-content h3 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+
+      .markdown-content ul,
+      .markdown-content ol {
+        margin-left: 20px;
+      }
+
+      .markdown-content code {
+        background: #f8f9fa;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+      }
+
+      .markdown-content pre {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+      }
+
+      .markdown-content pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+      }
+
+      .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .loading-overlay.active {
+        display: flex;
+      }
+
+      .btn-gradient {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+      }
+
+      .btn-gradient:hover {
+        opacity: 0.9;
+        color: white;
+      }
+
+      .query-section.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .table-responsive {
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      /* DataTables Custom Styling */
+      .dataTables_wrapper {
+        font-size: 0.9em;
+      }
+
+      .dataTables_wrapper .dataTables_length,
+      .dataTables_wrapper .dataTables_filter,
+      .dataTables_wrapper .dataTables_info,
+      .dataTables_wrapper .dataTables_paginate {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      table.dataTable {
+        border-collapse: collapse !important;
+        width: 100% !important;
+      }
+
+      table.dataTable thead th {
+        background: var(--primary-gradient);
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 12px 8px;
+      }
+
+      table.dataTable tbody td {
+        padding: 8px;
+        vertical-align: middle;
+      }
+
+      /* Horizontal scroll untuk table dengan banyak kolom */
+      .dataTables_scroll {
+        overflow-x: auto;
+      }
+
+      .dataTables_scrollBody {
+        overflow-x: auto !important;
+      }
+
+      /* Styling untuk search box */
+      .dataTables_filter input {
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        padding: 6px 12px;
+        margin-left: 8px;
+      }
+
+      .dataTables_filter input:focus {
+        border-color: #667eea;
+        outline: none;
+      }
+
+      /* Styling untuk page length selector */
+      .dataTables_length select {
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        padding: 6px 12px;
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="text-center bg-white p-5 rounded-3 shadow-lg">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h5>Memproses pertanyaan Anda...</h5>
+        <p class="text-muted mb-0">Ini mungkin memakan waktu beberapa detik</p>
+      </div>
+    </div>
+
+    <div class="container main-container">
+      <!-- Header -->
+      <div class="header-section">
+        <h1 class="display-4"><i class="bi bi-chat-dots"></i> SQL Agent</h1>
+        <p class="lead text-muted mb-0">Tanyakan apapun tentang database Anda dalam bahasa natural</p>
+      </div>
+
+      <!-- Alerts -->
+      {% if success_message %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ success_message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Error:</strong> {{ error }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+
+      <!-- Database Connection Section -->
+      <div class="content-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0"><i class="bi bi-database"></i> Database Connection</h4>
+          <span class="badge {% if is_connected %}bg-success status-connected{% else %}bg-danger status-disconnected{% endif %} px-3 py-2">
+            <span class="status-indicator"></span>
+            {% if is_connected %}
+              Connected ({{ total_tables }} tables)
+            {% else %}
+              Not Connected
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted small">Current Database URI:</label>
+          <div class="db-url-display">{{ current_db_url or 'Not connected' }}</div>
+        </div>
+
+        <!-- Collapsible DB Form -->
+        <div class="mb-3">
+          <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#dbFormCollapse">
+            <i class="bi bi-gear"></i> Configure Database Connection
+          </button>
+        </div>
+
+        <div class="collapse" id="dbFormCollapse">
+          <form action="/connect" method="POST" id="dbForm">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="db_type" class="form-label">Database Type</label>
+                <select class="form-select" id="db_type" name="db_type" onchange="updateDbUrl()">
+                  <option value="mysql">MySQL</option>
+                  <option value="postgresql">PostgreSQL</option>
+                  <option value="mariadb">MariaDB</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="host" class="form-label">Host</label>
+                <input type="text" class="form-control" id="host" name="host"
+                       placeholder="127.0.0.1:3306" value="127.0.0.1:3306" oninput="updateDbUrl()">
+              </div>
+
+              <div class="col-md-6">
+                <label for="user" class="form-label">Username</label>
+                <input type="text" class="form-control" id="user" name="user"
+                       placeholder="root" value="root" oninput="updateDbUrl()">
+              </div>
+
+              <div class="col-md-6">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                       placeholder="password" value="root" oninput="updateDbUrl()">
+              </div>
+
+              <div class="col-12">
+                <label for="db_name" class="form-label">Database Name</label>
+                <input type="text" class="form-control" id="db_name" name="db_name"
+                       placeholder="my_database" value="omniflow_hris" oninput="updateDbUrl()">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold text-muted small">Preview Database URI:</label>
+              <div class="db-url-display" id="previewDbUrl"></div>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-plug"></i> Connect to Database
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Query Section -->
+      <div class="content-section query-section {% if not is_connected %}disabled{% endif %}">
+        <h4 class="mb-3"><i class="bi bi-question-circle"></i> Masukkan Pertanyaan Anda</h4>
+
+        <form action="/" method="POST" id="queryForm" onsubmit="showLoading()">
+          <div class="mb-3">
+            <textarea class="form-control" id="question" name="question" rows="4"
+                      placeholder="Contoh: Tampilkan 10 users pertama, atau Apa saja tabel yang ada di database?"
+                      required>{{ question if question }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-gradient btn-lg" id="submitBtn">
+            <i class="bi bi-send"></i> Kirim Pertanyaan
+          </button>
+        </form>
+      </div>
+
+      <!-- Result Section -->
+      {% if result %}
+      <div class="content-section">
+        <!-- Display Question -->
+        {% if question %}
+        <div class="alert alert-info">
+          <strong><i class="bi bi-chat-quote"></i> Pertanyaan:</strong> {{ question }}
+        </div>
+        {% endif %}
+
+        <!-- Display Intent -->
+        {% if intent %}
+        <div class="mb-3">
+          <span class="badge {% if intent.lower() == 'query' %}bg-primary{% else %}bg-secondary{% endif %} fs-6 px-3 py-2">
+            <i class="bi bi-tag"></i> {{ intent.upper() }}
+          </span>
+        </div>
+        {% endif %}
+
+        <!-- Query Result -->
+        {% if result.type == 'query' %}
+          <!-- SQL Query Display -->
+          {% if result.sql %}
+          <div class="mb-4">
+            <h5><i class="bi bi-code-square"></i> SQL Query yang dihasilkan:</h5>
+            <div class="sql-box">{{ result.sql }}</div>
+          </div>
+          {% endif %}
+
+          <!-- Query Success -->
+          {% if result.success %}
+            {% if result.data %}
+            <div>
+              <h5><i class="bi bi-table"></i> Hasil Query:</h5>
+              <div class="table-responsive">
+                {{ result.data|safe }}
+              </div>
+              <p class="text-muted mt-2">
+                <i class="bi bi-info-circle"></i> Jumlah baris: <strong>{{ result.row_count }}</strong>
+              </p>
+            </div>
+            {% elif result.message %}
+            <div class="alert alert-success">
+              <i class="bi bi-check-circle"></i> {{ result.message }}
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="alert alert-danger">
+              <i class="bi bi-x-circle"></i> <strong>Error Eksekusi:</strong> {{ result.error }}
+            </div>
+          {% endif %}
+        {% endif %}
+
+        <!-- Schema Info Result -->
+        {% if result.type == 'schema_info' %}
+          {% if result.info %}
+          <div>
+            <h5><i class="bi bi-info-circle"></i> Informasi Schema:</h5>
+            <div class="markdown-content" id="schemaInfoContent">{{ result.info }}</div>
+          </div>
+          {% elif result.error %}
+          <div class="alert alert-danger">
+            <i class="bi bi-x-circle"></i> <strong>Error:</strong> {{ result.error }}
+          </div>
+          {% endif %}
+        {% endif %}
+
+        <!-- Unknown Intent -->
+        {% if result.error and not result.type %}
+        <div class="alert alert-danger">
+          <i class="bi bi-x-circle"></i> {{ result.error }}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+      // Configure marked.js
+      marked.setOptions({
+        breaks: true,
+        gfm: true,
+        headerIds: false,
+        mangle: false
+      });
+
+      // Driver mapping for database types
+      const driverMap = {
+        mysql: 'mysql+pymysql',
+        postgresql: 'postgresql+psycopg2',
+        mariadb: 'mysql+pymysql'
+      };
+
+      // Show loading overlay
+      function showLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        const submitBtn = document.getElementById('submitBtn');
+
+        overlay.classList.add('active');
+        submitBtn.disabled = true;
+
+        // Auto-hide after 60 seconds as fallback
+        setTimeout(function() {
+          hideLoading();
+        }, 60000);
+      }
+
+      // Hide loading overlay
+      function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        const submitBtn = document.getElementById('submitBtn');
+
+        overlay.classList.remove('active');
+        if (submitBtn) submitBtn.disabled = false;
+      }
+
+      // Update database URL preview in realtime
+      function updateDbUrl() {
+        const dbType = document.getElementById('db_type').value;
+        const host = document.getElementById('host').value;
+        const user = document.getElementById('user').value;
+        const password = document.getElementById('password').value;
+        const dbName = document.getElementById('db_name').value;
+
+        const driver = driverMap[dbType] || 'mysql+pymysql';
+        const dbUrl = `${driver}://${user}:${password}@${host}/${dbName}`;
+
+        document.getElementById('previewDbUrl').textContent = dbUrl;
+      }
+
+      // Render markdown content
+      function renderMarkdown() {
+        const schemaInfo = document.getElementById('schemaInfoContent');
+        if (schemaInfo && schemaInfo.textContent) {
+          const markdownText = schemaInfo.textContent;
+          schemaInfo.innerHTML = marked.parse(markdownText);
+        }
+      }
+
+      // Initialize DataTables
+      function initializeDataTables() {
+        // Find all tables generated by pandas
+        const tables = document.querySelectorAll('table.dataframe, table.table');
+
+        tables.forEach((table, index) => {
+          // Add Bootstrap classes
+          table.classList.add('table', 'table-striped', 'table-hover', 'table-bordered');
+
+          // Add unique ID if not present
+          if (!table.id) {
+            table.id = 'resultTable' + index;
+          }
+
+          // Check if already initialized
+          if ($.fn.DataTable.isDataTable('#' + table.id)) {
+            $('#' + table.id).DataTable().destroy();
+          }
+
+          // Initialize DataTable
+          $('#' + table.id).DataTable({
+            responsive: true,
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            scrollX: true,
+            scrollCollapse: true,
+            autoWidth: false,
+            language: {
+              search: "Cari:",
+              lengthMenu: "Tampilkan _MENU_ baris",
+              info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ baris",
+              infoEmpty: "Menampilkan 0 sampai 0 dari 0 baris",
+              infoFiltered: "(difilter dari _MAX_ total baris)",
+              paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Selanjutnya",
+                previous: "Sebelumnya"
+              },
+              emptyTable: "Tidak ada data",
+              zeroRecords: "Tidak ada data yang cocok"
+            },
+            columnDefs: [
+              {
+                targets: '_all',
+                className: 'text-nowrap'
+              }
+            ],
+            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                 '<"row"<"col-sm-12"tr>>' +
+                 '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+          });
+        });
+      }
+
+      // Initialize on page load
+      $(document).ready(function() {
+        updateDbUrl();
+        renderMarkdown();
+        initializeDataTables();
+        hideLoading();
+      });
+    </script>
+  </body>
+</html>

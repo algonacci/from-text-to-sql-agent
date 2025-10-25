@@ -8,7 +8,7 @@ from openai import OpenAI
 
 def show_spinner(message: str):
     """Tampilkan loading message"""
-    print(f"Û {message}", end="", flush=True)
+    print(f"‚è≥ {message}", end="", flush=True)
 
 
 def load_environment():
@@ -133,7 +133,9 @@ Classification:"""
             max_tokens=50  # We only need one word
         )
 
-        result = response.choices[0].message.content.strip().lower()
+        # save for gemini
+        # result = response.choices[0].message
+        result = response.choices[0].message.content
 
         # Fallback: ensure valid output
         if result not in ["query", "schema_info"]:
@@ -265,11 +267,11 @@ Now generate SQL for this question:
 </user_question>
 
 Output format requirements:
- Return ONLY the SQL query
- NO explanations, NO markdown blocks (```), NO extra text
- Query MUST start with SELECT
- Use proper SQL syntax and formatting
- Ensure query is executable
+Return ONLY the SQL query
+NO explanations, NO markdown blocks (```), NO extra text
+Query MUST start with SELECT
+Use proper SQL syntax and formatting
+Ensure query is executable
 
 If the question is unclear or impossible:
 - Return: SELECT 'Error: Unable to generate query - question unclear' as message
@@ -287,18 +289,48 @@ SQL Query:"""
         )
 
         query = response.choices[0].message.content.strip()
+        print(f"[DEBUG] Raw LLM response: {repr(query[:200])}")  # Print first 200 chars
 
-        # Fallback: Validate the query starts with SELECT
-        if not query.upper().startswith("SELECT"):
-            # Try to extract SELECT statement if wrapped in other text
-            lines = query.split('\n')
-            for line in lines:
-                if line.strip().upper().startswith("SELECT"):
-                    return line.strip()
+        # Multiple cleaning attempts
+        # 1. Try clean_sql function
+        query_cleaned = clean_sql(query)
+        print(f"[DEBUG] After clean_sql: {repr(query_cleaned[:200])}")
+
+        # 2. Try to find SELECT statement anywhere in the text
+        import re
+        # Pattern to match SELECT queries (case insensitive, multiline)
+        select_pattern = r'(SELECT\s+.*?)(?:;|\Z)'
+        match = re.search(select_pattern, query_cleaned, re.IGNORECASE | re.DOTALL)
+
+        if match:
+            extracted_query = match.group(1).strip()
+            print(f"[DEBUG] Extracted query via regex: {repr(extracted_query[:200])}")
+            return extracted_query
+
+        # 3. Line-by-line search for SELECT
+        if not query_cleaned.upper().startswith("SELECT"):
+            print(f"[DEBUG] Query doesn't start with SELECT, trying line-by-line...")
+            lines = query_cleaned.split('\n')
+            for i, line in enumerate(lines):
+                stripped = line.strip()
+                if stripped.upper().startswith("SELECT"):
+                    # Try to get multi-line SELECT if needed
+                    remaining_lines = '\n'.join(lines[i:])
+                    select_match = re.search(select_pattern, remaining_lines, re.IGNORECASE | re.DOTALL)
+                    if select_match:
+                        result = select_match.group(1).strip()
+                        print(f"[DEBUG] Found SELECT starting at line {i}: {repr(result[:200])}")
+                        return result
+                    else:
+                        print(f"[DEBUG] Found SELECT at line {i}: {repr(stripped[:200])}")
+                        return stripped
+
             # If no valid SELECT found, return error query
+            print("[DEBUG] No valid SELECT statement found in response")
+            print(f"[DEBUG] Full cleaned response: {repr(query_cleaned)}")
             return "SELECT 'Error: Invalid query generated' as error_message"
 
-        return query
+        return query_cleaned
     except Exception as e:
         raise RuntimeError(f"Gagal generate SQL query: {str(e)}")
 
@@ -369,8 +401,8 @@ Question: "Bagaimana relasi antar tabel?"
 Analysis: User wants foreign key relationships
 Response:
 Relasi antar tabel:
-- orders.user_id í users.id (Many-to-One)
-- orders.product_id í products.id (Many-to-One)
+- orders.user_id ‚Üí users.id (Many-to-One)
+- orders.product_id ‚Üí products.id (Many-to-One)
 
 Now answer this question:
 <user_question>
@@ -378,10 +410,10 @@ Now answer this question:
 </user_question>
 
 Output format requirements:
- Provide concise, direct answer
- Use bullet points or numbered lists for clarity
- Highlight important information (primary keys, foreign keys, constraints)
- Keep response under 200 words unless detailed explanation needed
+Provide concise, direct answer
+Use bullet points or numbered lists for clarity
+Highlight important information (primary keys, foreign keys, constraints)
+Keep response under 200 words unless detailed explanation needed
 
 If the question is unclear:
 - Provide general overview of database structure

@@ -7,4 +7,9 @@ requires-python = ">=3.12"
 dependencies = [
     "flask>=3.1.2",
     "openai>=2.6.1",
+    "pandas>=2.3.3",
+    "psycopg2-binary>=2.9.11",
+    "pymysql>=1.1.2",
+    "python-dotenv>=1.1.1",
+    "sqlalchemy>=2.0.44",
 ]
