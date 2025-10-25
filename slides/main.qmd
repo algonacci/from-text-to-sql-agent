@@ -105,7 +105,7 @@ Mengubah pertanyaan dalam bahasa natural menjadi SQL query menggunakan LLM
 
 ---
 
-## Problem Statement 🤔
+## Problem Statement
 
 :::: {.columns}
 ::: {.column width="50%"}
@@ -131,333 +131,82 @@ Mengubah pertanyaan dalam bahasa natural menjadi SQL query menggunakan LLM
 
 ## Arsitektur Sistem {.smaller}
 
-```{mermaid}
-flowchart LR
-    A[User Input] --> B[Intent Classification]
-    B -->|query| C[SQL Generator]
-    B -->|schema_info| D[Schema Info Generator]
-    C --> E[Query Cleaner]
-    E --> F[SQL Executor]
-    F --> G[Result Formatter]
-    D --> H[Schema Formatter]
-    G --> I[Display Results]
-    H --> I
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style C fill:#c8e6c9
-    style D fill:#c8e6c9
-    style F fill:#ffebee
-    style I fill:#f3e5f5
-```
+![](./arsitektur-sistem.png){width=80%}
 
 ---
 
-## How It Works ⚙️
+## How It Works
 
 1. **Input** - User mengetik pertanyaan dalam bahasa natural
-2. **Intent Classification** - LLM mengklasifikasi: `query` atau `schema_info`
+2. **Intent Classification** - LLM mengklasifikasi: query atau schema_info
 3. **Generation** - LLM membuat SQL query atau info schema
 4. **Execution** - Execute query di database (read-only)
 5. **Display** - Tampilkan hasil dalam format rapi
 
+
+
+#
+
+![](./memes/demo.jpg){width=500 style="margin: 20px auto; display: block;"}
+
+<div style="text-align: center; margin-top: 20px; font-size: 1.5em; font-weight: bold;">
+Demo Time
+</div>
+
 ---
 
-## Demo Flow 🎬
+## Quick Setup Guide {.smaller}
 
+**1. Clone Repository**
 ```bash
-💬 Masukkan pertanyaan ('exit' untuk keluar):
-> ada berapa users?
+git clone https://github.com/algonacci/from-text-to-sql-agent
+cd from-text-to-sql-agent/scripts
+```
 
-🔍 Intent terdeteksi: 'query'
-✅ SQL query berhasil dibuat
+**2. Setup Environment**
+```bash
+cp .env.example .env
+# Edit .env dengan credentials Anda
+```
 
-📝 Generated Query:
-   SELECT COUNT(*) FROM users
+**3. Install Dependencies**
+```bash
+uv sync
+```
 
-✅ Query berhasil dijalankan
-
-📊 Hasil Query (1 rows):
- COUNT(*)
-      106
+**4. Run the Agent**
+```bash
+uv run simple.py
 ```
 
 ---
 
-## Code Structure 📁 {.smaller}
-
-Modular design dengan separation of concerns:
+## Tips and Tricks {.smaller}
 
 :::: {.columns}
 ::: {.column width="50%"}
-**`simple.py`**
-
-Main orchestration:
-- `main()` - Entry point & loop
-- `handle_query_intent()` - Query handler
-- `handle_schema_info_intent()` - Schema handler
-- Error handling & UX
+- Prompt engineering
+- Context engineering
+- Only query `SELECT` statement
+- Validate the generated query statement
 :::
 
 ::: {.column width="50%"}
-**`helpers.py`**
 
-Utility functions:
-- Setup (env, OpenAI, database)
-- `classify_intent()` - Intent detection
-- `generate_sql_query()` - SQL generation
-- `execute_select_query()` - Query execution
-- Error handling & validation
+- Structured prompt
+- Role and persona
+- Chain-of-Thought (CoT)
+- One shot example
+- Few shot example
+- Explicit instruction
+- Output formatting
+- Fallback behavior
 :::
 ::::
 
 ---
 
-## Key Component: Main Loop {.smaller}
-
-```python
-def main():
-    # Setup environment dan services
-    load_environment()
-    client = setup_openai_client()
-    engine, inspector = setup_database()
-
-    # Ambil schema database
-    schema_data = get_database_schema(inspector)
-
-    # Main loop
-    while True:
-        user_input = input("\n💬 Masukkan pertanyaan: ").strip()
-
-        # Klasifikasi intent
-        intent = classify_intent(client, user_input)
-
-        # Handle berdasarkan intent
-        if intent.lower() == "query":
-            handle_query_intent(client, engine, schema_data, user_input)
-        elif intent.lower() == "schema_info":
-            handle_schema_info_intent(client, schema_data, user_input)
-```
-
----
-
-## Key Component: Intent Classification {.smaller}
-
-```python
-def classify_intent(client, question: str) -> str:
-    """Klasifikasi: 'query' atau 'schema_info'"""
-    response = client.chat.completions.create(
-        model=os.getenv("LLM_MODEL_NAME"),
-        messages=[
-            {
-                "role": "system",
-                "content": "Kamu adalah SQL assistant yang sangat mahir."
-            },
-            {
-                "role": "user",
-                "content": f"""
-                Klasifikasi jenis pertanyaan berikut:
-                1. query - Pertanyaan data dari user
-                2. schema_info - Informasi schema database
-
-                <question>{question}</question>
-                """
-            }
-        ],
-        temperature=0.3
-    )
-    return response.choices[0].message.content.strip()
-```
-
----
-
-## Key Component: SQL Generation {.smaller}
-
-```python
-def generate_sql_query(client, schema_data, question: str) -> str:
-    """Generate SQL query dari pertanyaan user"""
-    prompt = f"""
-Struktur tabel:
-{schema_data}
-
-Pertanyaan user: "{question}"
-
-HASIL YANG DIINGINKAN:
-- Berikan HANYA SQL query yang dapat dieksekusi langsung
-- JANGAN berikan penjelasan atau teks tambahan
-- Pastikan query dimulai dengan SELECT
-- Query harus valid dan dapat dijalankan
-    """
-
-    response = client.chat.completions.create(
-        model=os.getenv("LLM_MODEL_NAME"),
-        messages=[...],
-        temperature=0.3
-    )
-    return response.choices[0].message.content.strip()
-```
-
----
-
-## Key Component: Query Execution {.smaller}
-
-```python
-def execute_select_query(engine, sql_query: str):
-    """Execute SELECT query dan return DataFrame"""
-    # Validasi query
-    if not sql_query.lower().startswith("select"):
-        return False, "Hanya query SELECT yang boleh dieksekusi."
-
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(text(sql_query))
-            rows = result.fetchall()
-
-            if rows:
-                # Konversi ke DataFrame untuk display
-                df = pd.DataFrame(rows, columns=result.keys())
-                return True, df
-            else:
-                return True, "Query berhasil, tapi tidak ada hasil."
-    except Exception as e:
-        return False, f"Error: {str(e)}"
-```
-
----
-
-## Features ✨
-
-:::: {.columns}
-::: {.column width="50%"}
-**Smart Features:**
-
-- 🤖 LLM-powered query generation
-- 🔍 Intent classification
-- 📊 Auto schema detection
-- 🛡️ Read-only safety (SELECT only)
-:::
-
-::: {.column width="50%"}
-**UX Features:**
-
-- ⏳ Loading indicators
-- 🎯 Error handling & recovery
-- 💬 User-friendly messages
-- 👋 Graceful exit (Ctrl+C)
-:::
-::::
-
----
-
-## Tech Stack 🛠️
-
-| Component | Technology |
-|-----------|-----------|
-| Language | Python 3.x |
-| LLM Client | OpenAI API (compatible) |
-| Database | SQLAlchemy (universal) |
-| Data Display | Pandas DataFrame |
-| Environment | python-dotenv |
-
-: Tech Stack Overview {#tbl-techstack}
-
----
-
-## Security & Safety 🔒 {.smaller}
-
-**Built-in Protections:**
-
-1. **Read-only Mode**
-   - Hanya query `SELECT` yang diizinkan
-   - Tidak bisa `INSERT`, `UPDATE`, `DELETE`, `DROP`
-
-2. **Environment Variables**
-   - Credentials disimpan di `.env`
-   - Tidak di-commit ke repository
-
-3. **Error Handling**
-   - Validation di setiap step
-   - Try-catch untuk semua operasi kritis
-   - Informative error messages
-
----
-
-## Example: Simple Query
-
-**Input:**
-```
-ada berapa users?
-```
-
-**Generated SQL:**
-```sql
-SELECT COUNT(*) FROM users
-```
-
-**Output:**
-```
-COUNT(*)
-     106
-```
-
----
-
-## Example: Complex Query
-
-**Input:**
-```
-tampilkan 5 users dengan email gmail
-```
-
-**Generated SQL:**
-```sql
-SELECT * FROM users
-WHERE email LIKE '%@gmail.com%'
-LIMIT 5
-```
-
-**Output:**
-```
-   id  name              email                  phone
-    1  John Doe          john@gmail.com         081234567890
-    2  Jane Smith        jane@gmail.com         081234567891
-   ...
-```
-
----
-
-## Example: Schema Info
-
-**Input:**
-```
-ada apa saja tabel di database?
-```
-
-**Response:**
-```
-📚 Informasi Schema:
-
-Database memiliki 3 tabel:
-1. users - Menyimpan data pengguna
-2. products - Menyimpan data produk
-3. orders - Menyimpan data pesanan
-
-Total: 3 tables
-```
-
----
-
-## Advantages ✅
-
-- ⚡ **Fast** - Query generation dalam detik
-- 🎯 **Accurate** - LLM memahami schema context
-- 🚀 **Easy to Use** - No SQL knowledge required
-- 🔄 **Reusable** - Modular code structure
-- 🛠️ **Extensible** - Easy to add new features
-
----
-
-## Challenges & Limitations ⚠️
+## Challenges and Limitations
 
 1. **LLM Accuracy**
    - Kadang generate query yang tidak optimal
@@ -473,33 +222,33 @@ Total: 3 tables
 
 ---
 
-## Future Improvements 🚀 {.smaller}
+## Future Improvements {.smaller}
 
 :::: {.columns}
 ::: {.column width="50%"}
 **Features:**
 
-- 📈 Query history & caching
-- 🔄 Query optimization suggestions
-- 📊 Data visualization
-- 💾 Export hasil (CSV, Excel)
-- 🗣️ Multi-language support
+- Query history & caching
+- Query optimization suggestions
+- Data visualization
+- Export hasil (CSV, Excel)
+- Multi-language support
 :::
 
 ::: {.column width="50%"}
 **Technical:**
 
-- 🧪 Unit testing
-- 📝 Query validation
-- 🎨 Web UI (FastAPI + React)
-- 🔐 User authentication
-- 📱 Mobile app
+- Unit testing
+- Query validation
+- Web UI (FastAPI + React)
+- User authentication
+- Mobile app
 :::
 ::::
 
 ---
 
-## Use Cases 💼
+## Use Cases
 
 1. **Business Analytics**
    - Non-technical users query data
@@ -519,23 +268,7 @@ Total: 3 tables
 
 ---
 
-## Demo Time! 🎉
-
-Live demonstration:
-
-1. Setup environment
-2. Run the agent
-3. Try different queries
-4. Show error handling
-5. Explore schema info
-
-```bash
-uv run scripts/simple.py
-```
-
----
-
-## Key Takeaways 🎓
+## Key Takeaways
 
 1. **LLM + Database = Powerful Combo**
    - Natural language accessibility
@@ -552,7 +285,7 @@ uv run scripts/simple.py
 
 ---
 
-## Resources 📚
+## Resources
 
 **Project Repository:**
 ```
@@ -571,58 +304,11 @@ pip install openai sqlalchemy pandas python-dotenv
 
 ---
 
-# Questions? 🤔 {.center}
+# Q&A {.center}
 
 **Thank you for listening!**
 
 Contact:
 - GitHub: @ericjulianto
+- X/Twitter: @algonacci
 - Email: eric@example.com
-
----
-
-## Bonus: Quick Setup Guide {.smaller}
-
-**1. Clone Repository**
-```bash
-git clone https://github.com/ericjulianto/from-text-to-sql-agent
-cd from-text-to-sql-agent
-```
-
-**2. Setup Environment**
-```bash
-cp .env.example .env
-# Edit .env dengan credentials Anda
-```
-
-**3. Install Dependencies**
-```bash
-uv pip install -r requirements.txt
-```
-
-**4. Run the Agent**
-```bash
-uv run scripts/simple.py
-```
-
----
-
-## Bonus: .env Configuration {.smaller}
-
-```bash
-# LLM Configuration
-LLM_BASE_URL=https://api.openai.com/v1
-LLM_API_KEY=sk-your-api-key-here
-LLM_MODEL_NAME=gpt-4
-LLM_MAX_TOKENS=4096
-
-# Database Configuration
-DATABASE_URL=postgresql://user:pass@localhost:5432/dbname
-```
-
-**Supported Databases:**
-- PostgreSQL
-- MySQL
-- SQLite
-- SQL Server
-- Oracle

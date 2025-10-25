@@ -189,9 +189,6 @@
       margin-right: 0; 
     }
   </style>
-  <script src="main_files/libs/quarto-diagram/mermaid.min.js"></script>
-  <script src="main_files/libs/quarto-diagram/mermaid-init.js"></script>
-  <link href="main_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -271,7 +268,7 @@ Eric Julianto
 <p>Mengubah pertanyaan dalam bahasa natural menjadi SQL query menggunakan LLM</p>
 </section>
 <section id="problem-statement" class="slide level2">
-<h2>Problem Statement 🤔</h2>
+<h2>Problem Statement</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><strong>Tantangan:</strong></p>
@@ -293,305 +290,64 @@ Eric Julianto
 </section>
 <section id="arsitektur-sistem" class="slide level2 smaller">
 <h2>Arsitektur Sistem</h2>
-<div class="cell" data-reveal="true" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-    A[User Input] --&gt; B[Intent Classification]
-    B --&gt;|query| C[SQL Generator]
-    B --&gt;|schema_info| D[Schema Info Generator]
-    C --&gt; E[Query Cleaner]
-    E --&gt; F[SQL Executor]
-    F --&gt; G[Result Formatter]
-    D --&gt; H[Schema Formatter]
-    G --&gt; I[Display Results]
-    H --&gt; I
 
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style C fill:#c8e6c9
-    style D fill:#c8e6c9
-    style F fill:#ffebee
-    style I fill:#f3e5f5
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</section>
+<img data-src="./arsitektur-sistem.png" class="img-fluid r-stretch" style="width:80.0%"></section>
 <section id="how-it-works" class="slide level2">
-<h2>How It Works ⚙️</h2>
+<h2>How It Works</h2>
 <ol type="1">
 <li><strong>Input</strong> - User mengetik pertanyaan dalam bahasa natural</li>
-<li><strong>Intent Classification</strong> - LLM mengklasifikasi: <code>query</code> atau <code>schema_info</code></li>
+<li><strong>Intent Classification</strong> - LLM mengklasifikasi: query atau schema_info</li>
 <li><strong>Generation</strong> - LLM membuat SQL query atau info schema</li>
 <li><strong>Execution</strong> - Execute query di database (read-only)</li>
 <li><strong>Display</strong> - Tampilkan hasil dalam format rapi</li>
 </ol>
+</section></section>
+<section>
+<section id="section-3" class="title-slide slide level1 center">
+<h1></h1>
+
+<img data-src="./memes/demo.jpg" class="img-fluid r-stretch" style="margin: 20px auto; display: block;" width="500"><div style="text-align: center; margin-top: 20px; font-size: 1.5em; font-weight: bold;">
+<p>Demo Time</p>
+</div>
 </section>
-<section id="demo-flow" class="slide level2">
-<h2>Demo Flow 🎬</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href=""></a><span class="ex">💬</span> Masukkan pertanyaan <span class="er">(</span><span class="st">'exit'</span> untuk keluar<span class="kw">)</span><span class="bu">:</span></span>
-<span id="cb1-2"><a href=""></a><span class="op">&gt;</span> ada <span class="ex">berapa</span> users<span class="pp">?</span></span>
-<span id="cb1-3"><a href=""></a></span>
-<span id="cb1-4"><a href=""></a><span class="ex">🔍</span> Intent terdeteksi: <span class="st">'query'</span></span>
-<span id="cb1-5"><a href=""></a><span class="ex">✅</span> SQL query berhasil dibuat</span>
-<span id="cb1-6"><a href=""></a></span>
-<span id="cb1-7"><a href=""></a><span class="ex">📝</span> Generated Query:</span>
-<span id="cb1-8"><a href=""></a>   <span class="ex">SELECT</span> COUNT<span class="er">(</span><span class="ex">*</span><span class="kw">)</span> <span class="ex">FROM</span> users</span>
-<span id="cb1-9"><a href=""></a></span>
-<span id="cb1-10"><a href=""></a><span class="ex">✅</span> Query berhasil dijalankan</span>
-<span id="cb1-11"><a href=""></a></span>
-<span id="cb1-12"><a href=""></a><span class="ex">📊</span> Hasil Query <span class="er">(</span><span class="ex">1</span> rows<span class="kw">)</span><span class="bu">:</span></span>
-<span id="cb1-13"><a href=""></a> <span class="ex">COUNT</span><span class="er">(</span><span class="ex">*</span><span class="kw">)</span></span>
-<span id="cb1-14"><a href=""></a>      <span class="ex">106</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="quick-setup-guide" class="slide level2 smaller">
+<h2>Quick Setup Guide</h2>
+<p><strong>1. Clone Repository</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href=""></a><span class="fu">git</span> clone https://github.com/algonacci/from-text-to-sql-agent</span>
+<span id="cb1-2"><a href=""></a><span class="bu">cd</span> from-text-to-sql-agent/scripts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>2. Setup Environment</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href=""></a><span class="fu">cp</span> .env.example .env</span>
+<span id="cb2-2"><a href=""></a><span class="co"># Edit .env dengan credentials Anda</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>3. Install Dependencies</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href=""></a><span class="ex">uv</span> sync</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>4. Run the Agent</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href=""></a><span class="ex">uv</span> run simple.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="code-structure" class="slide level2 smaller">
-<h2>Code Structure 📁</h2>
-<p>Modular design dengan separation of concerns:</p>
+<section id="tips-and-tricks" class="slide level2 smaller">
+<h2>Tips and Tricks</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p><strong><code>simple.py</code></strong></p>
-<p>Main orchestration: - <code>main()</code> - Entry point &amp; loop - <code>handle_query_intent()</code> - Query handler - <code>handle_schema_info_intent()</code> - Schema handler - Error handling &amp; UX</p>
-</div><div class="column" style="width:50%;">
-<p><strong><code>helpers.py</code></strong></p>
-<p>Utility functions: - Setup (env, OpenAI, database) - <code>classify_intent()</code> - Intent detection - <code>generate_sql_query()</code> - SQL generation - <code>execute_select_query()</code> - Query execution - Error handling &amp; validation</p>
-</div></div>
-</section>
-<section id="key-component-main-loop" class="slide level2 smaller">
-<h2>Key Component: Main Loop</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="kw">def</span> main():</span>
-<span id="cb2-2"><a href=""></a>    <span class="co"># Setup environment dan services</span></span>
-<span id="cb2-3"><a href=""></a>    load_environment()</span>
-<span id="cb2-4"><a href=""></a>    client <span class="op">=</span> setup_openai_client()</span>
-<span id="cb2-5"><a href=""></a>    engine, inspector <span class="op">=</span> setup_database()</span>
-<span id="cb2-6"><a href=""></a></span>
-<span id="cb2-7"><a href=""></a>    <span class="co"># Ambil schema database</span></span>
-<span id="cb2-8"><a href=""></a>    schema_data <span class="op">=</span> get_database_schema(inspector)</span>
-<span id="cb2-9"><a href=""></a></span>
-<span id="cb2-10"><a href=""></a>    <span class="co"># Main loop</span></span>
-<span id="cb2-11"><a href=""></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
-<span id="cb2-12"><a href=""></a>        user_input <span class="op">=</span> <span class="bu">input</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">💬 Masukkan pertanyaan: "</span>).strip()</span>
-<span id="cb2-13"><a href=""></a></span>
-<span id="cb2-14"><a href=""></a>        <span class="co"># Klasifikasi intent</span></span>
-<span id="cb2-15"><a href=""></a>        intent <span class="op">=</span> classify_intent(client, user_input)</span>
-<span id="cb2-16"><a href=""></a></span>
-<span id="cb2-17"><a href=""></a>        <span class="co"># Handle berdasarkan intent</span></span>
-<span id="cb2-18"><a href=""></a>        <span class="cf">if</span> intent.lower() <span class="op">==</span> <span class="st">"query"</span>:</span>
-<span id="cb2-19"><a href=""></a>            handle_query_intent(client, engine, schema_data, user_input)</span>
-<span id="cb2-20"><a href=""></a>        <span class="cf">elif</span> intent.lower() <span class="op">==</span> <span class="st">"schema_info"</span>:</span>
-<span id="cb2-21"><a href=""></a>            handle_schema_info_intent(client, schema_data, user_input)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="key-component-intent-classification" class="slide level2 smaller">
-<h2>Key Component: Intent Classification</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="kw">def</span> classify_intent(client, question: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
-<span id="cb3-2"><a href=""></a>    <span class="co">"""Klasifikasi: 'query' atau 'schema_info'"""</span></span>
-<span id="cb3-3"><a href=""></a>    response <span class="op">=</span> client.chat.completions.create(</span>
-<span id="cb3-4"><a href=""></a>        model<span class="op">=</span>os.getenv(<span class="st">"LLM_MODEL_NAME"</span>),</span>
-<span id="cb3-5"><a href=""></a>        messages<span class="op">=</span>[</span>
-<span id="cb3-6"><a href=""></a>            {</span>
-<span id="cb3-7"><a href=""></a>                <span class="st">"role"</span>: <span class="st">"system"</span>,</span>
-<span id="cb3-8"><a href=""></a>                <span class="st">"content"</span>: <span class="st">"Kamu adalah SQL assistant yang sangat mahir."</span></span>
-<span id="cb3-9"><a href=""></a>            },</span>
-<span id="cb3-10"><a href=""></a>            {</span>
-<span id="cb3-11"><a href=""></a>                <span class="st">"role"</span>: <span class="st">"user"</span>,</span>
-<span id="cb3-12"><a href=""></a>                <span class="st">"content"</span>: <span class="ss">f"""</span></span>
-<span id="cb3-13"><a href=""></a><span class="ss">                Klasifikasi jenis pertanyaan berikut:</span></span>
-<span id="cb3-14"><a href=""></a><span class="ss">                1. query - Pertanyaan data dari user</span></span>
-<span id="cb3-15"><a href=""></a><span class="ss">                2. schema_info - Informasi schema database</span></span>
-<span id="cb3-16"><a href=""></a></span>
-<span id="cb3-17"><a href=""></a><span class="ss">                &lt;question&gt;</span><span class="sc">{</span>question<span class="sc">}</span><span class="ss">&lt;/question&gt;</span></span>
-<span id="cb3-18"><a href=""></a><span class="ss">                """</span></span>
-<span id="cb3-19"><a href=""></a>            }</span>
-<span id="cb3-20"><a href=""></a>        ],</span>
-<span id="cb3-21"><a href=""></a>        temperature<span class="op">=</span><span class="fl">0.3</span></span>
-<span id="cb3-22"><a href=""></a>    )</span>
-<span id="cb3-23"><a href=""></a>    <span class="cf">return</span> response.choices[<span class="dv">0</span>].message.content.strip()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="key-component-sql-generation" class="slide level2 smaller">
-<h2>Key Component: SQL Generation</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="kw">def</span> generate_sql_query(client, schema_data, question: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
-<span id="cb4-2"><a href=""></a>    <span class="co">"""Generate SQL query dari pertanyaan user"""</span></span>
-<span id="cb4-3"><a href=""></a>    prompt <span class="op">=</span> <span class="ss">f"""</span></span>
-<span id="cb4-4"><a href=""></a><span class="ss">Struktur tabel:</span></span>
-<span id="cb4-5"><a href=""></a><span class="sc">{</span>schema_data<span class="sc">}</span></span>
-<span id="cb4-6"><a href=""></a></span>
-<span id="cb4-7"><a href=""></a><span class="ss">Pertanyaan user: "</span><span class="sc">{</span>question<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb4-8"><a href=""></a></span>
-<span id="cb4-9"><a href=""></a><span class="ss">HASIL YANG DIINGINKAN:</span></span>
-<span id="cb4-10"><a href=""></a><span class="ss">- Berikan HANYA SQL query yang dapat dieksekusi langsung</span></span>
-<span id="cb4-11"><a href=""></a><span class="ss">- JANGAN berikan penjelasan atau teks tambahan</span></span>
-<span id="cb4-12"><a href=""></a><span class="ss">- Pastikan query dimulai dengan SELECT</span></span>
-<span id="cb4-13"><a href=""></a><span class="ss">- Query harus valid dan dapat dijalankan</span></span>
-<span id="cb4-14"><a href=""></a><span class="ss">    """</span></span>
-<span id="cb4-15"><a href=""></a></span>
-<span id="cb4-16"><a href=""></a>    response <span class="op">=</span> client.chat.completions.create(</span>
-<span id="cb4-17"><a href=""></a>        model<span class="op">=</span>os.getenv(<span class="st">"LLM_MODEL_NAME"</span>),</span>
-<span id="cb4-18"><a href=""></a>        messages<span class="op">=</span>[...],</span>
-<span id="cb4-19"><a href=""></a>        temperature<span class="op">=</span><span class="fl">0.3</span></span>
-<span id="cb4-20"><a href=""></a>    )</span>
-<span id="cb4-21"><a href=""></a>    <span class="cf">return</span> response.choices[<span class="dv">0</span>].message.content.strip()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="key-component-query-execution" class="slide level2 smaller">
-<h2>Key Component: Query Execution</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="kw">def</span> execute_select_query(engine, sql_query: <span class="bu">str</span>):</span>
-<span id="cb5-2"><a href=""></a>    <span class="co">"""Execute SELECT query dan return DataFrame"""</span></span>
-<span id="cb5-3"><a href=""></a>    <span class="co"># Validasi query</span></span>
-<span id="cb5-4"><a href=""></a>    <span class="cf">if</span> <span class="kw">not</span> sql_query.lower().startswith(<span class="st">"select"</span>):</span>
-<span id="cb5-5"><a href=""></a>        <span class="cf">return</span> <span class="va">False</span>, <span class="st">"Hanya query SELECT yang boleh dieksekusi."</span></span>
-<span id="cb5-6"><a href=""></a></span>
-<span id="cb5-7"><a href=""></a>    <span class="cf">try</span>:</span>
-<span id="cb5-8"><a href=""></a>        <span class="cf">with</span> engine.<span class="ex">connect</span>() <span class="im">as</span> conn:</span>
-<span id="cb5-9"><a href=""></a>            result <span class="op">=</span> conn.execute(text(sql_query))</span>
-<span id="cb5-10"><a href=""></a>            rows <span class="op">=</span> result.fetchall()</span>
-<span id="cb5-11"><a href=""></a></span>
-<span id="cb5-12"><a href=""></a>            <span class="cf">if</span> rows:</span>
-<span id="cb5-13"><a href=""></a>                <span class="co"># Konversi ke DataFrame untuk display</span></span>
-<span id="cb5-14"><a href=""></a>                df <span class="op">=</span> pd.DataFrame(rows, columns<span class="op">=</span>result.keys())</span>
-<span id="cb5-15"><a href=""></a>                <span class="cf">return</span> <span class="va">True</span>, df</span>
-<span id="cb5-16"><a href=""></a>            <span class="cf">else</span>:</span>
-<span id="cb5-17"><a href=""></a>                <span class="cf">return</span> <span class="va">True</span>, <span class="st">"Query berhasil, tapi tidak ada hasil."</span></span>
-<span id="cb5-18"><a href=""></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
-<span id="cb5-19"><a href=""></a>        <span class="cf">return</span> <span class="va">False</span>, <span class="ss">f"Error: </span><span class="sc">{</span><span class="bu">str</span>(e)<span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="features" class="slide level2">
-<h2>Features ✨</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Smart Features:</strong></p>
 <ul>
-<li>🤖 LLM-powered query generation</li>
-<li>🔍 Intent classification</li>
-<li>📊 Auto schema detection</li>
-<li>🛡️ Read-only safety (SELECT only)</li>
+<li>Prompt engineering</li>
+<li>Context engineering</li>
+<li>Only query <code>SELECT</code> statement</li>
+<li>Validate the generated query statement</li>
 </ul>
 </div><div class="column" style="width:50%;">
-<p><strong>UX Features:</strong></p>
 <ul>
-<li>⏳ Loading indicators</li>
-<li>🎯 Error handling &amp; recovery</li>
-<li>💬 User-friendly messages</li>
-<li>👋 Graceful exit (Ctrl+C)</li>
+<li>Structured prompt</li>
+<li>Role and persona</li>
+<li>Chain-of-Thought (CoT)</li>
+<li>One shot example</li>
+<li>Few shot example</li>
+<li>Explicit instruction</li>
+<li>Output formatting</li>
+<li>Fallback behavior</li>
 </ul>
 </div></div>
 </section>
-<section id="tech-stack" class="slide level2">
-<h2>Tech Stack 🛠️</h2>
-<div id="tbl-techstack" class="quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-tbl">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-techstack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Tech Stack Overview
-</figcaption>
-<div aria-describedby="tbl-techstack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Component</th>
-<th>Technology</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Language</td>
-<td>Python 3.x</td>
-</tr>
-<tr class="even">
-<td>LLM Client</td>
-<td>OpenAI API (compatible)</td>
-</tr>
-<tr class="odd">
-<td>Database</td>
-<td>SQLAlchemy (universal)</td>
-</tr>
-<tr class="even">
-<td>Data Display</td>
-<td>Pandas DataFrame</td>
-</tr>
-<tr class="odd">
-<td>Environment</td>
-<td>python-dotenv</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-</section>
-<section id="security-safety" class="slide level2 smaller">
-<h2>Security &amp; Safety 🔒</h2>
-<p><strong>Built-in Protections:</strong></p>
-<ol type="1">
-<li><strong>Read-only Mode</strong>
-<ul>
-<li>Hanya query <code>SELECT</code> yang diizinkan</li>
-<li>Tidak bisa <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, <code>DROP</code></li>
-</ul></li>
-<li><strong>Environment Variables</strong>
-<ul>
-<li>Credentials disimpan di <code>.env</code></li>
-<li>Tidak di-commit ke repository</li>
-</ul></li>
-<li><strong>Error Handling</strong>
-<ul>
-<li>Validation di setiap step</li>
-<li>Try-catch untuk semua operasi kritis</li>
-<li>Informative error messages</li>
-</ul></li>
-</ol>
-</section>
-<section id="example-simple-query" class="slide level2">
-<h2>Example: Simple Query</h2>
-<p><strong>Input:</strong></p>
-<pre><code>ada berapa users?</code></pre>
-<p><strong>Generated SQL:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><a href=""></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> users</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Output:</strong></p>
-<pre><code>COUNT(*)
-     106</code></pre>
-</section>
-<section id="example-complex-query" class="slide level2">
-<h2>Example: Complex Query</h2>
-<p><strong>Input:</strong></p>
-<pre><code>tampilkan 5 users dengan email gmail</code></pre>
-<p><strong>Generated SQL:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href=""></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> users</span>
-<span id="cb10-2"><a href=""></a><span class="kw">WHERE</span> email <span class="kw">LIKE</span> <span class="st">'%@gmail.com%'</span></span>
-<span id="cb10-3"><a href=""></a><span class="kw">LIMIT</span> <span class="dv">5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Output:</strong></p>
-<pre><code>   id  name              email                  phone
-    1  John Doe          john@gmail.com         081234567890
-    2  Jane Smith        jane@gmail.com         081234567891
-   ...</code></pre>
-</section>
-<section id="example-schema-info" class="slide level2">
-<h2>Example: Schema Info</h2>
-<p><strong>Input:</strong></p>
-<pre><code>ada apa saja tabel di database?</code></pre>
-<p><strong>Response:</strong></p>
-<pre><code>📚 Informasi Schema:
-
-Database memiliki 3 tabel:
-1. users - Menyimpan data pengguna
-2. products - Menyimpan data produk
-3. orders - Menyimpan data pesanan
-
-Total: 3 tables</code></pre>
-</section>
-<section id="advantages" class="slide level2">
-<h2>Advantages ✅</h2>
-<ul>
-<li>⚡ <strong>Fast</strong> - Query generation dalam detik</li>
-<li>🎯 <strong>Accurate</strong> - LLM memahami schema context</li>
-<li>🚀 <strong>Easy to Use</strong> - No SQL knowledge required</li>
-<li>🔄 <strong>Reusable</strong> - Modular code structure</li>
-<li>🛠️ <strong>Extensible</strong> - Easy to add new features</li>
-</ul>
-</section>
-<section id="challenges-limitations" class="slide level2">
-<h2>Challenges &amp; Limitations ⚠️</h2>
+<section id="challenges-and-limitations" class="slide level2">
+<h2>Challenges and Limitations</h2>
 <ol type="1">
 <li><strong>LLM Accuracy</strong>
 <ul>
@@ -611,30 +367,30 @@ Total: 3 tables</code></pre>
 </ol>
 </section>
 <section id="future-improvements" class="slide level2 smaller">
-<h2>Future Improvements 🚀</h2>
+<h2>Future Improvements</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><strong>Features:</strong></p>
 <ul>
-<li>📈 Query history &amp; caching</li>
-<li>🔄 Query optimization suggestions</li>
-<li>📊 Data visualization</li>
-<li>💾 Export hasil (CSV, Excel)</li>
-<li>🗣️ Multi-language support</li>
+<li>Query history &amp; caching</li>
+<li>Query optimization suggestions</li>
+<li>Data visualization</li>
+<li>Export hasil (CSV, Excel)</li>
+<li>Multi-language support</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><strong>Technical:</strong></p>
 <ul>
-<li>🧪 Unit testing</li>
-<li>📝 Query validation</li>
-<li>🎨 Web UI (FastAPI + React)</li>
-<li>🔐 User authentication</li>
-<li>📱 Mobile app</li>
+<li>Unit testing</li>
+<li>Query validation</li>
+<li>Web UI (FastAPI + React)</li>
+<li>User authentication</li>
+<li>Mobile app</li>
 </ul>
 </div></div>
 </section>
 <section id="use-cases" class="slide level2">
-<h2>Use Cases 💼</h2>
+<h2>Use Cases</h2>
 <ol type="1">
 <li><strong>Business Analytics</strong>
 <ul>
@@ -658,20 +414,8 @@ Total: 3 tables</code></pre>
 </ul></li>
 </ol>
 </section>
-<section id="demo-time" class="slide level2">
-<h2>Demo Time! 🎉</h2>
-<p>Live demonstration:</p>
-<ol type="1">
-<li>Setup environment</li>
-<li>Run the agent</li>
-<li>Try different queries</li>
-<li>Show error handling</li>
-<li>Explore schema info</li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href=""></a><span class="ex">uv</span> run scripts/simple.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
 <section id="key-takeaways" class="slide level2">
-<h2>Key Takeaways 🎓</h2>
+<h2>Key Takeaways</h2>
 <ol type="1">
 <li><strong>LLM + Database = Powerful Combo</strong>
 <ul>
@@ -692,48 +436,22 @@ Total: 3 tables</code></pre>
 </ol>
 </section>
 <section id="resources" class="slide level2">
-<h2>Resources 📚</h2>
+<h2>Resources</h2>
 <p><strong>Project Repository:</strong></p>
 <pre><code>github.com/ericjulianto/from-text-to-sql-agent</code></pre>
 <p><strong>Key Dependencies:</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href=""></a><span class="ex">pip</span> install openai sqlalchemy pandas python-dotenv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href=""></a><span class="ex">pip</span> install openai sqlalchemy pandas python-dotenv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Learn More:</strong> - OpenAI API Documentation - SQLAlchemy Documentation - Prompt Engineering Guide</p>
 </section>
 <section class="slide level2">
 
 </section></section>
-<section>
-<section id="questions" class="title-slide slide level1 center">
-<h1>Questions? 🤔</h1>
+<section id="qa" class="title-slide slide level1 center">
+<h1>Q&amp;A</h1>
 <p><strong>Thank you for listening!</strong></p>
-<p>Contact: - GitHub: <span class="citation" data-cites="ericjulianto">@ericjulianto</span> - Email: eric@example.com</p>
-</section>
-<section id="bonus-quick-setup-guide" class="slide level2 smaller">
-<h2>Bonus: Quick Setup Guide</h2>
-<p><strong>1. Clone Repository</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href=""></a><span class="fu">git</span> clone https://github.com/ericjulianto/from-text-to-sql-agent</span>
-<span id="cb17-2"><a href=""></a><span class="bu">cd</span> from-text-to-sql-agent</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>2. Setup Environment</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href=""></a><span class="fu">cp</span> .env.example .env</span>
-<span id="cb18-2"><a href=""></a><span class="co"># Edit .env dengan credentials Anda</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>3. Install Dependencies</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href=""></a><span class="ex">uv</span> pip install <span class="at">-r</span> requirements.txt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>4. Run the Agent</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href=""></a><span class="ex">uv</span> run scripts/simple.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="bonus-.env-configuration" class="slide level2 smaller">
-<h2>Bonus: .env Configuration</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href=""></a><span class="co"># LLM Configuration</span></span>
-<span id="cb21-2"><a href=""></a><span class="va">LLM_BASE_URL</span><span class="op">=</span>https://api.openai.com/v1</span>
-<span id="cb21-3"><a href=""></a><span class="va">LLM_API_KEY</span><span class="op">=</span>sk-your-api-key-here</span>
-<span id="cb21-4"><a href=""></a><span class="va">LLM_MODEL_NAME</span><span class="op">=</span>gpt-4</span>
-<span id="cb21-5"><a href=""></a><span class="va">LLM_MAX_TOKENS</span><span class="op">=</span>4096</span>
-<span id="cb21-6"><a href=""></a></span>
-<span id="cb21-7"><a href=""></a><span class="co"># Database Configuration</span></span>
-<span id="cb21-8"><a href=""></a><span class="va">DATABASE_URL</span><span class="op">=</span>postgresql://user:pass@localhost:5432/dbname</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Supported Databases:</strong> - PostgreSQL - MySQL - SQLite - SQL Server - Oracle</p>
+<p>Contact: - GitHub: <span class="citation" data-cites="ericjulianto">@ericjulianto</span> - X/Twitter: <span class="citation" data-cites="algonacci">@algonacci</span> - Email: eric@example.com</p>
 
-</section></section>
+</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="logo.png" class="slide-logo"></p>

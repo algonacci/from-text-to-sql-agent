@@ -1,0 +1,55 @@
+@startuml arsitektur-sistem
+!theme plain
+left to right direction
+
+skinparam defaultFontSize 14
+skinparam arrowThickness 2
+skinparam roundcorner 10
+
+' Setup Phase
+package "Setup Phase" #lightgray {
+    rectangle "Env\nLoader" as ENV #white
+    rectangle "OpenAI\nClient" as OPENAI #lightblue
+    rectangle "Database\nConnection" as DB #lightyellow
+    rectangle "Schema\nLoader" as SCHEMA #lightgreen
+}
+
+' Main Loop
+rectangle "User Input" as A #lightblue
+rectangle "Intent\nClassification" as B #lightyellow
+
+' Query Path
+rectangle "SQL\nGenerator" as C #lightgreen
+rectangle "Query\nCleaner" as E #white
+rectangle "SQL\nExecutor" as F #pink
+
+' Schema Info Path
+rectangle "Schema Info\nGenerator" as D #lightgreen
+
+' Output
+rectangle "Display\nResults" as I #lavender
+
+' Setup Flow
+ENV -right-> OPENAI : credentials
+ENV -right-> DB : database url
+DB -right-> SCHEMA : inspect
+SCHEMA .down.> C : schema data
+SCHEMA .down.> D : schema data
+
+' OpenAI Client dependencies
+OPENAI .down.> B : client
+OPENAI .down.> C : client
+OPENAI .down.> D : client
+
+' Main Flow
+A -right-> B
+
+B -down-> C : query
+C -right-> E
+E -right-> F
+F -down-> I
+
+B -down-> D : schema_info
+D -down-> I
+
+@enduml

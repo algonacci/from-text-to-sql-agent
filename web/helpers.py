@@ -8,7 +8,7 @@ from openai import OpenAI
 
 def show_spinner(message: str):
     """Tampilkan loading message"""
-    print(f"⏳ {message}", end="", flush=True)
+    print(f"� {message}", end="", flush=True)
 
 
 def load_environment():
@@ -265,11 +265,11 @@ Now generate SQL for this question:
 </user_question>
 
 Output format requirements:
-✓ Return ONLY the SQL query
-✓ NO explanations, NO markdown blocks (```), NO extra text
-✓ Query MUST start with SELECT
-✓ Use proper SQL syntax and formatting
-✓ Ensure query is executable
+ Return ONLY the SQL query
+ NO explanations, NO markdown blocks (```), NO extra text
+ Query MUST start with SELECT
+ Use proper SQL syntax and formatting
+ Ensure query is executable
 
 If the question is unclear or impossible:
 - Return: SELECT 'Error: Unable to generate query - question unclear' as message
@@ -369,8 +369,8 @@ Question: "Bagaimana relasi antar tabel?"
 Analysis: User wants foreign key relationships
 Response:
 Relasi antar tabel:
-- orders.user_id → users.id (Many-to-One)
-- orders.product_id → products.id (Many-to-One)
+- orders.user_id � users.id (Many-to-One)
+- orders.product_id � products.id (Many-to-One)
 
 Now answer this question:
 <user_question>
@@ -378,10 +378,10 @@ Now answer this question:
 </user_question>
 
 Output format requirements:
-✓ Provide concise, direct answer
-✓ Use bullet points or numbered lists for clarity
-✓ Highlight important information (primary keys, foreign keys, constraints)
-✓ Keep response under 200 words unless detailed explanation needed
+ Provide concise, direct answer
+ Use bullet points or numbered lists for clarity
+ Highlight important information (primary keys, foreign keys, constraints)
+ Keep response under 200 words unless detailed explanation needed
 
 If the question is unclear:
 - Provide general overview of database structure
