@@ -143,7 +143,47 @@ Mengubah pertanyaan dalam bahasa natural menjadi SQL query menggunakan LLM
 4. **Execution** - Execute query di database (read-only)
 5. **Display** - Tampilkan hasil dalam format rapi
 
+---
 
+## Tech Stacks {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+**LLM & AI**
+
+LLM API (Flexible)
+
+Langfuse (Observability)
+
+**Backend**
+
+Python 3.12+
+
+Flask (Web Framework)
+
+SQLAlchemy
+
+Pandas
+:::
+
+::: {.column width="50%"}
+**Database Drivers**
+
+psycopg2-binary (PostgreSQL)
+
+PyMySQL (MySQL/MariaDB)
+
+**Development Tools**
+
+UV (Package Manager)
+
+Python-dotenv (Config)
+
+Git (Version Control)
+:::
+::::
+
+---
 
 #
 
