@@ -26,10 +26,7 @@ def setup_openai_client():
         if not base_url or not api_key:
             raise ValueError("LLM_BASE_URL dan LLM_API_KEY harus diset di .env file")
 
-        return OpenAI(
-            base_url=base_url,
-            api_key=api_key
-        )
+        return OpenAI(base_url=base_url, api_key=api_key)
         # prepare Langfuse observability
         # return openai.OpenAI(
         #     base_url=base_url,
@@ -133,10 +130,10 @@ Classification:"""
             model=os.getenv("LLM_MODEL_NAME"),
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
+                {"role": "user", "content": user_prompt},
             ],
             temperature=0.1,  # Lower temperature for consistent classification
-            max_tokens=50  # We only need one word
+            max_tokens=50,  # We only need one word
         )
 
         # save for gemini
@@ -162,10 +159,7 @@ def get_database_schema(inspector):
     Returns:
         Dictionary berisi informasi schema database
     """
-    result_data = {
-        "total_tables": 0,
-        "tables": {}
-    }
+    result_data = {"total_tables": 0, "tables": {}}
 
     table_names = inspector.get_table_names()
     result_data["total_tables"] = len(table_names)
@@ -175,34 +169,44 @@ def get_database_schema(inspector):
             "columns": [],
             "primary_keys": [],
             "foreign_keys": [],
-            "indexes": []
+            "indexes": [],
         }
 
         # Columns
         for col in inspector.get_columns(table_name):
-            table_data["columns"].append({
-                "name": col['name'],
-                "type": str(col['type']),
-                "nullable": col['nullable'],
-                "default": col['default']
-            })
+            table_data["columns"].append(
+                {
+                    "name": col["name"],
+                    "type": str(col["type"]),
+                    "nullable": col["nullable"],
+                    "default": col["default"],
+                }
+            )
 
         # Primary keys
-        table_data["primary_keys"] = inspector.get_pk_constraint(table_name)['constrained_columns']
+        table_data["primary_keys"] = inspector.get_pk_constraint(table_name)[
+            "constrained_columns"
+        ]
 
         # Foreign keys
-        table_data["foreign_keys"] = [{
-            "constrained_columns": fk['constrained_columns'],
-            "referred_table": fk['referred_table'],
-            "referred_columns": fk['referred_columns']
-        } for fk in inspector.get_foreign_keys(table_name)]
+        table_data["foreign_keys"] = [
+            {
+                "constrained_columns": fk["constrained_columns"],
+                "referred_table": fk["referred_table"],
+                "referred_columns": fk["referred_columns"],
+            }
+            for fk in inspector.get_foreign_keys(table_name)
+        ]
 
         # Indexes
-        table_data["indexes"] = [{
-            "name": idx['name'],
-            "columns": idx['column_names'],
-            "unique": idx['unique']
-        } for idx in inspector.get_indexes(table_name)]
+        table_data["indexes"] = [
+            {
+                "name": idx["name"],
+                "columns": idx["column_names"],
+                "unique": idx["unique"],
+            }
+            for idx in inspector.get_indexes(table_name)
+        ]
 
         result_data["tables"][table_name] = table_data
 
@@ -288,10 +292,10 @@ SQL Query:"""
             model=os.getenv("LLM_MODEL_NAME"),
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
+                {"role": "user", "content": user_prompt},
             ],
             temperature=0.2,  # Low temp for consistent SQL generation
-            max_tokens=1000
+            max_tokens=1000,
         )
 
         query = response.choices[0].message.content.strip()
@@ -304,8 +308,9 @@ SQL Query:"""
 
         # 2. Try to find SELECT statement anywhere in the text
         import re
+
         # Pattern to match SELECT queries (case insensitive, multiline)
-        select_pattern = r'(SELECT\s+.*?)(?:;|\Z)'
+        select_pattern = r"(SELECT\s+.*?)(?:;|\Z)"
         match = re.search(select_pattern, query_cleaned, re.IGNORECASE | re.DOTALL)
 
         if match:
@@ -316,19 +321,25 @@ SQL Query:"""
         # 3. Line-by-line search for SELECT
         if not query_cleaned.upper().startswith("SELECT"):
             print(f"[DEBUG] Query doesn't start with SELECT, trying line-by-line...")
-            lines = query_cleaned.split('\n')
+            lines = query_cleaned.split("\n")
             for i, line in enumerate(lines):
                 stripped = line.strip()
                 if stripped.upper().startswith("SELECT"):
                     # Try to get multi-line SELECT if needed
-                    remaining_lines = '\n'.join(lines[i:])
-                    select_match = re.search(select_pattern, remaining_lines, re.IGNORECASE | re.DOTALL)
+                    remaining_lines = "\n".join(lines[i:])
+                    select_match = re.search(
+                        select_pattern, remaining_lines, re.IGNORECASE | re.DOTALL
+                    )
                     if select_match:
                         result = select_match.group(1).strip()
-                        print(f"[DEBUG] Found SELECT starting at line {i}: {repr(result[:200])}")
+                        print(
+                            f"[DEBUG] Found SELECT starting at line {i}: {repr(result[:200])}"
+                        )
                         return result
                     else:
-                        print(f"[DEBUG] Found SELECT at line {i}: {repr(stripped[:200])}")
+                        print(
+                            f"[DEBUG] Found SELECT at line {i}: {repr(stripped[:200])}"
+                        )
                         return stripped
 
             # If no valid SELECT found, return error query
@@ -431,10 +442,10 @@ Response:"""
             model=os.getenv("LLM_MODEL_NAME"),
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
+                {"role": "user", "content": user_prompt},
             ],
             temperature=0.3,  # Moderate temp for natural language
-            max_tokens=500
+            max_tokens=500,
         )
 
         info = response.choices[0].message.content.strip()

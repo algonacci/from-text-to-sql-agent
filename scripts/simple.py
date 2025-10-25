@@ -9,7 +9,7 @@ from helpers import (
     generate_schema_info,
     clean_sql,
     execute_select_query,
-    show_spinner
+    show_spinner,
 )
 
 
@@ -31,7 +31,9 @@ def main():
         while True:
             try:
                 # Input pertanyaan
-                user_input = input("\n💬 Masukkan pertanyaan ('exit' untuk keluar): ").strip()
+                user_input = input(
+                    "\n💬 Masukkan pertanyaan ('exit' untuk keluar): "
+                ).strip()
 
                 if not user_input:
                     continue

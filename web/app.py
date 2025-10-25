@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine, inspect, text
@@ -15,6 +16,7 @@ inspector = None
 schema_data = None
 current_db_url = None
 
+
 def initialize_openai_client():
     """Initialize OpenAI client only"""
     global client
@@ -26,6 +28,7 @@ def initialize_openai_client():
     except Exception as e:
         print(f"❌ Error saat inisialisasi OpenAI client: {str(e)}")
         return False
+
 
 def connect_database(database_url=None):
     """Connect to database with given URL or from .env"""
@@ -59,16 +62,18 @@ def connect_database(database_url=None):
         print(f"❌ {error_msg}")
         return False, error_msg
 
+
 def build_database_url(db_type, host, user, password, db_name):
     """Build database URL dari komponen"""
     driver_map = {
         "mysql": "mysql+pymysql",
         "postgresql": "postgresql+psycopg2",
-        "mariadb": "mysql+pymysql"
+        "mariadb": "mysql+pymysql",
     }
 
     driver = driver_map.get(db_type, "mysql+pymysql")
     return f"{driver}://{user}:{password}@{host}/{db_name}"
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -79,22 +84,26 @@ def index():
 
         # Handle GET request - tampilkan halaman
         if request.method == "GET":
-            return render_template("index.html",
-                                 current_db_url=current_db_url or default_db_url,
-                                 is_connected=schema_data is not None,
-                                 total_tables=schema_data['total_tables'] if schema_data else 0)
+            return render_template(
+                "index.html",
+                current_db_url=current_db_url or default_db_url,
+                is_connected=schema_data is not None,
+                total_tables=schema_data["total_tables"] if schema_data else 0,
+            )
 
         # Handle POST request - process query
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("🔍 Processing new query...")
 
         # Check if database is connected
         if schema_data is None:
             print("❌ Database not connected")
-            return render_template("index.html",
-                                 current_db_url=current_db_url or default_db_url,
-                                 is_connected=False,
-                                 error="Silakan hubungkan ke database terlebih dahulu!")
+            return render_template(
+                "index.html",
+                current_db_url=current_db_url or default_db_url,
+                is_connected=False,
+                error="Silakan hubungkan ke database terlebih dahulu!",
+            )
 
         # Ambil pertanyaan dari form
         question = request.form.get("question", "").strip()
@@ -102,11 +111,13 @@ def index():
 
         if not question:
             print("❌ Empty question")
-            return render_template("index.html",
-                                 current_db_url=current_db_url,
-                                 is_connected=True,
-                                 total_tables=schema_data['total_tables'],
-                                 error="Pertanyaan tidak boleh kosong!")
+            return render_template(
+                "index.html",
+                current_db_url=current_db_url,
+                is_connected=True,
+                total_tables=schema_data["total_tables"],
+                error="Pertanyaan tidak boleh kosong!",
+            )
 
         # Klasifikasi intent
         print("🔄 Classifying intent...")
@@ -124,29 +135,32 @@ def index():
             print("✅ Schema info intent handled")
         else:
             print(f"⚠️  Unknown intent: {intent}")
-            result = {
-                "intent": intent,
-                "error": "Jenis pertanyaan tidak dikenali"
-            }
+            result = {"intent": intent, "error": "Jenis pertanyaan tidak dikenali"}
 
         print("✅ Rendering response...")
-        return render_template("index.html",
-                             current_db_url=current_db_url,
-                             is_connected=True,
-                             total_tables=schema_data['total_tables'],
-                             question=question,
-                             intent=intent,
-                             result=result)
+        return render_template(
+            "index.html",
+            current_db_url=current_db_url,
+            is_connected=True,
+            total_tables=schema_data["total_tables"],
+            question=question,
+            intent=intent,
+            result=result,
+        )
 
     except Exception as e:
         print(f"❌ Error: {str(e)}")
         import traceback
+
         traceback.print_exc()
-        return render_template("index.html",
-                             current_db_url=current_db_url or default_db_url,
-                             is_connected=schema_data is not None,
-                             total_tables=schema_data['total_tables'] if schema_data else 0,
-                             error=f"Terjadi kesalahan: {str(e)}")
+        return render_template(
+            "index.html",
+            current_db_url=current_db_url or default_db_url,
+            is_connected=schema_data is not None,
+            total_tables=schema_data["total_tables"] if schema_data else 0,
+            error=f"Terjadi kesalahan: {str(e)}",
+        )
+
 
 @app.route("/connect", methods=["POST"])
 def connect():
@@ -165,20 +179,24 @@ def connect():
         success, error_msg = connect_database(database_url)
 
         if success:
-            return render_template("index.html",
-                                 current_db_url=current_db_url,
-                                 is_connected=True,
-                                 total_tables=schema_data['total_tables'],
-                                 success_message=f"Berhasil terhubung ke database! Ditemukan {schema_data['total_tables']} tabel.")
+            return render_template(
+                "index.html",
+                current_db_url=current_db_url,
+                is_connected=True,
+                total_tables=schema_data["total_tables"],
+                success_message=f"Berhasil terhubung ke database! Ditemukan {schema_data['total_tables']} tabel.",
+            )
         else:
-            return render_template("index.html",
-                                 current_db_url=database_url,
-                                 is_connected=False,
-                                 error=error_msg)
+            return render_template(
+                "index.html",
+                current_db_url=database_url,
+                is_connected=False,
+                error=error_msg,
+            )
 
     except Exception as e:
-        return render_template("index.html",
-                             error=f"Terjadi kesalahan: {str(e)}")
+        return render_template("index.html", error=f"Terjadi kesalahan: {str(e)}")
+
 
 def handle_query_intent(question: str):
     """Handle intent 'query' - generate dan execute SQL query"""
@@ -192,11 +210,7 @@ def handle_query_intent(question: str):
         sql_query = helpers.clean_sql(openai_output)
         success, result = helpers.execute_select_query(engine, sql_query)
 
-        response = {
-            "type": "query",
-            "sql": sql_query,
-            "success": success
-        }
+        response = {"type": "query", "sql": sql_query, "success": success}
 
         if success:
             if isinstance(result, str):
@@ -214,10 +228,8 @@ def handle_query_intent(question: str):
         return response
 
     except Exception as e:
-        return {
-            "type": "query",
-            "error": f"Error saat memproses query: {str(e)}"
-        }
+        return {"type": "query", "error": f"Error saat memproses query: {str(e)}"}
+
 
 def handle_schema_info_intent(question: str):
     """Handle intent 'schema_info' - tampilkan informasi schema"""
@@ -225,22 +237,22 @@ def handle_schema_info_intent(question: str):
         # Generate schema info
         schema_info = helpers.generate_schema_info(client, schema_data, question)
 
-        return {
-            "type": "schema_info",
-            "info": schema_info
-        }
+        return {"type": "schema_info", "info": schema_info}
 
     except Exception as e:
         return {
             "type": "schema_info",
-            "error": f"Error saat mengambil info schema: {str(e)}"
+            "error": f"Error saat mengambil info schema: {str(e)}",
         }
+
 
 if __name__ == "__main__":
     # Initialize OpenAI client
     if initialize_openai_client():
         print("\n🚀 Starting Flask server...")
-        print("💡 Anda bisa menggunakan database default dari .env atau input manual di web interface")
+        print(
+            "💡 Anda bisa menggunakan database default dari .env atau input manual di web interface"
+        )
 
         # Try to connect to default database from .env (optional)
         default_db = os.getenv("DATABASE_URL")
@@ -249,7 +261,9 @@ if __name__ == "__main__":
             success, error = connect_database(default_db)
             if not success:
                 print(f"⚠️  Gagal koneksi otomatis: {error}")
-                print("💡 Silakan input database connection secara manual di web interface")
+                print(
+                    "💡 Silakan input database connection secara manual di web interface"
+                )
 
         app.run(debug=True)
     else:
