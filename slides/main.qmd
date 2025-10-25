@@ -94,7 +94,7 @@ format:
 
 #
 
-![](./memes/tau-apa-tentang-sql-agent){width=400 style="margin: 20px auto; display: block;"}
+![](./memes/tau-apa-tentang-sql-agent.png){width=400 style="margin: 20px auto; display: block;"}
 
 
 # From Text to<br>SQL Agent {.center .smaller}
@@ -160,13 +160,13 @@ Demo Time
 **1. Clone Repository**
 ```bash
 git clone https://github.com/algonacci/from-text-to-sql-agent
-cd from-text-to-sql-agent/scripts
+cd from-text-to-sql-agent
+cd scripts
 ```
 
 **2. Setup Environment**
 ```bash
 cp .env.example .env
-# Edit .env dengan credentials Anda
 ```
 
 **3. Install Dependencies**
@@ -206,8 +206,10 @@ uv run simple.py
 
 ---
 
-## Challenges and Limitations
+## Challenges and Limitations {.smaller}
 
+:::: {.columns}
+::: {.column width="50%"}
 1. **LLM Accuracy**
    - Kadang generate query yang tidak optimal
    - Butuh prompt engineering yang baik
@@ -215,10 +217,14 @@ uv run simple.py
 2. **Complex Queries**
    - JOIN multi-table masih challenging
    - Aggregasi kompleks perlu tuning
+:::
 
+::: {.column width="50%"}
 3. **Database Specific**
    - Dialect SQL berbeda per database
    - Perlu testing per platform
+:::
+::::
 
 ---
 
@@ -248,8 +254,10 @@ uv run simple.py
 
 ---
 
-## Use Cases
+## Use Cases {.smaller}
 
+:::: {.columns}
+::: {.column width="50%"}
 1. **Business Analytics**
    - Non-technical users query data
    - Quick insights tanpa SQL
@@ -257,7 +265,9 @@ uv run simple.py
 2. **Data Exploration**
    - Explorasi database baru
    - Understand schema cepat
+:::
 
+::: {.column width="50%"}
 3. **Prototyping**
    - Rapid query testing
    - Data validation
@@ -265,11 +275,289 @@ uv run simple.py
 4. **Education**
    - Belajar SQL dari generated queries
    - Understand best practices
+:::
+::::
+
+
+#
+
+![](./memes/so-simple-right.jpg){width=500 style="margin: 20px auto; display: block;"}
+
+
+
+# Advanced Case {.center}
+
+**What if...**
 
 ---
 
-## Key Takeaways
+## What if... {.smaller}
 
+:::: {.columns}
+::: {.column width="50%"}
+- **Multi Database**
+  - Lebih dari 1 database
+  - Cross-database queries
+
+- **Dialek Berbeda**
+  - PostgreSQL, MySQL, SQL Server
+  - Syntax compatibility issues
+
+- **Scale Challenge**
+  - Jumlah row sudah jutaan
+  - Performance optimization needed
+:::
+
+::: {.column width="50%"}
+- **Complex Schema**
+  - Jumlah tabel sudah ratusan
+  - Dependency mapping
+
+- **Security & Privacy**
+  - Sensitive data handling
+  - Row-level security
+
+- **Real-time Analytics**
+  - Streaming data
+  - Live dashboard queries
+:::
+::::
+
+---
+
+## Cara Tackle Advanced Case {.smaller}
+
+**Hybrid Approach: Template-based + LLM Fallback**
+
+:::: {.columns}
+::: {.column width="50%"}
+**Template Pipeline (~5-10s)**
+
+Pattern Matching → SQL Templates → Execute
+
+**LLM Pipeline (~30-60s)**
+
+Intent → Routing → Schema Filter → SQL Gen → Format
+:::
+
+::: {.column width="50%"}
+**Key Solutions**
+
+**Multi-DB**: Session registry mapping
+
+**Scale**: 2-stage schema filtering
+
+**Security**: SQL sanitization guards
+
+**Performance**: Template caching
+
+**Complexity**: Foreign key graph
+:::
+::::
+
+---
+
+## SQL Template Example {.smaller}
+
+**Query**: "Tampilkan user yang aktif dengan role admin"
+
+**Pattern**: USER_LIST_FILTER → **Variables**: `{status: "active", role: "admin", limit: 50}`
+
+```sql
+SELECT
+    u.id, u.name, u.email,
+    u.role, u.status,
+    u.created_at
+FROM users u
+WHERE u.status = '{status}'
+  {role_filter}
+  AND u.deleted_at IS NULL
+ORDER BY u.created_at DESC
+LIMIT {limit};
+```
+
+**Filled Template**: `{role_filter}` → `AND u.role = 'admin'`
+
+**Result**: Fast, consistent, predictable SQL generation
+
+---
+
+## Deep Dive: Schema Filtering {.smaller}
+
+**Problem**: Ratusan tabel → LLM hallucination & slow
+
+**Solution: 2-Stage Filtering**
+
+:::: {.columns}
+::: {.column width="50%"}
+**Stage 1: Graph-based**
+
+Required tables + neighbors via FK graph
+
+200 tables → ~30 tables
+
+**Stage 2: LLM Refinement**
+
+Chain-of-Thought reasoning + confidence scoring
+
+30 tables → 5-10 tables
+:::
+
+::: {.column width="50%"}
+**Best Practices Applied**
+
+Structured prompt
+
+Few-shot examples
+
+Chain-of-Thought
+
+Role & persona definition
+
+Explicit instructions
+
+Fallback behavior
+:::
+::::
+
+---
+
+## Security: SQL Sanitization {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+**Guards Module**
+```python
+def sanitize_sql(sql: str):
+  # Only allow SELECT/WITH
+  if not starts_with_select():
+    raise ValueError()
+
+  # Block dangerous keywords
+  if has_forbidden_tokens():
+    raise ValueError()
+
+  # Prevent SQL injection
+  if has_multiple_statements():
+    raise ValueError()
+
+  # Force LIMIT
+  ensure_limit(default=500)
+```
+:::
+
+::: {.column width="50%"}
+**Protection Against**
+
+SQL Injection
+
+DROP TABLE attacks
+
+Multi-statement execution
+
+Unbounded queries
+
+Comment-based bypasses
+
+**Read-only enforcement** pada database level
+:::
+::::
+
+---
+
+## Multi-Database Handling {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+**Session Registry Pattern**
+```python
+SESSION_REGISTRY = {
+  "db_1": SessionMySQL,
+  "db_2": SessionMariaDB,
+  "db_3": SessionPSQL,
+  "db_4": SessionMariaDB
+}
+```
+
+**Auto-routing based on**
+
+Intent classification
+
+Keyword mapping
+
+Table requirements
+:::
+
+::: {.column width="50%"}
+**Dialect-aware SQL Templates**
+
+PostgreSQL: `DATE_TRUNC`
+
+MySQL: `YEAR()`, `DATE_FORMAT`
+
+MariaDB: JSON functions
+
+**Dynamic template selection** berdasarkan detected database
+:::
+::::
+
+---
+
+## Performance Optimization {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+**Template-based Pipeline**
+
+17 pre-built SQL templates
+
+Pattern matching ~2-3s
+
+Total query time ~5-10s
+
+99%+ consistency
+
+**Pattern Definitions**
+
+JSON-based pattern library
+
+Variable extraction rules
+
+Default value fallbacks
+:::
+
+::: {.column width="50%"}
+**Optimization Techniques**
+
+Forced LIMIT on queries
+
+Schema pre-filtering
+
+Foreign key graph caching
+
+Confidence-based routing
+
+Lazy LLM fallback
+
+**Trade-off**: Speed vs Flexibility
+:::
+::::
+
+
+#
+
+![](./memes/demo-2.jpg){width=500 style="margin: 20px auto; display: block;"}
+
+<div style="text-align: center; margin-top: 20px; font-size: 1.5em; font-weight: bold;">
+Demo Time (Part 2)
+</div>
+
+---
+
+## Key Takeaways {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
 1. **LLM + Database = Powerful Combo**
    - Natural language accessibility
    - Reduce learning curve
@@ -277,38 +565,50 @@ uv run simple.py
 2. **Modular Architecture Matters**
    - Easy to maintain
    - Easy to extend
+:::
 
+::: {.column width="50%"}
 3. **User Experience is Key**
    - Error handling
    - Helpful messages
    - Smooth interactions
+:::
+::::
+
+
+#
+
+![](./memes/materi-selesai.png){width=400 style="margin: 20px auto; display: block;"}
 
 ---
 
 ## Resources
 
+:::: {.columns}
+::: {.column width="60%"}
 **Project Repository:**
 ```
-github.com/ericjulianto/from-text-to-sql-agent
+https://github.com/algonacci/from-text-to-sql-agent
 ```
 
-**Key Dependencies:**
-```bash
-pip install openai sqlalchemy pandas python-dotenv
+**Short Link:**
 ```
+https://s.id/sql-agent-bandungpy
+```
+:::
 
-**Learn More:**
-- OpenAI API Documentation
-- SQLAlchemy Documentation
-- Prompt Engineering Guide
+::: {.column width="40%"}
+![](./qr-sql-agent-bandungpy.png){width=250 style="margin: 0 auto; display: block;"}
+:::
+::::
 
----
 
-# Q&A {.center}
+<div style="text-align: center;">
 
-**Thank you for listening!**
+## Q&A
 
-Contact:
-- GitHub: @ericjulianto
-- X/Twitter: @algonacci
-- Email: eric@example.com
+![](./memes/any-question.png){width=300 style="margin: 20px auto; display: block;"}
+
+### Thank you for listening!
+
+</div>

@@ -4,6 +4,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect, text
 from openai import OpenAI
+from langfuse.openai import openai
 
 
 def show_spinner(message: str):
@@ -29,6 +30,11 @@ def setup_openai_client():
             base_url=base_url,
             api_key=api_key
         )
+        # prepare Langfuse observability
+        # return openai.OpenAI(
+        #     base_url=base_url,
+        #     api_key=api_key
+        # )
     except Exception as e:
         raise RuntimeError(f"Gagal setup OpenAI client: {str(e)}")
 
