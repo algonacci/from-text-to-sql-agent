@@ -6,12 +6,24 @@
     <title>SQL Agent - Web Interface</title>
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
     <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css"
+    />
 
     <style>
       :root {
@@ -73,8 +85,13 @@
       }
 
       @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
       }
 
       .db-url-display {
@@ -82,7 +99,7 @@
         color: #4ec9b0;
         padding: 12px 15px;
         border-radius: 8px;
-        font-family: 'Courier New', monospace;
+        font-family: "Courier New", monospace;
         font-size: 0.9em;
         word-break: break-all;
         border: 1px solid #333;
@@ -93,7 +110,7 @@
         color: #ce9178;
         padding: 15px;
         border-radius: 8px;
-        font-family: 'Courier New', monospace;
+        font-family: "Courier New", monospace;
         font-size: 0.95em;
         overflow-x: auto;
         border: 1px solid #333;
@@ -119,7 +136,7 @@
         background: #f8f9fa;
         padding: 2px 6px;
         border-radius: 3px;
-        font-family: 'Courier New', monospace;
+        font-family: "Courier New", monospace;
       }
 
       .markdown-content pre {
@@ -241,7 +258,11 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
       <div class="text-center bg-white p-5 rounded-3 shadow-lg">
-        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+        <div
+          class="spinner-border text-primary mb-3"
+          role="status"
+          style="width: 3rem; height: 3rem"
+        >
           <span class="visually-hidden">Loading...</span>
         </div>
         <h5>Memproses pertanyaan Anda...</h5>
@@ -253,46 +274,66 @@
       <!-- Header -->
       <div class="header-section">
         <h1 class="display-4"><i class="bi bi-chat-dots"></i> SQL Agent</h1>
-        <p class="lead text-muted mb-0">Tanyakan apapun tentang database Anda dalam bahasa natural</p>
+        <p class="lead text-muted mb-0">
+          Tanyakan apapun tentang database Anda dalam bahasa natural
+        </p>
       </div>
 
       <!-- Alerts -->
       {% if success_message %}
       <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="bi bi-check-circle-fill me-2"></i>{{ success_message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
       </div>
-      {% endif %}
-
-      {% if error %}
+      {% endif %} {% if error %}
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Error:</strong> {{ error }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <i class="bi bi-exclamation-triangle-fill me-2"></i
+        ><strong>Error:</strong> {{ error }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
       </div>
       {% endif %}
 
       <!-- Database Connection Section -->
       <div class="content-section">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="mb-0"><i class="bi bi-database"></i> Database Connection</h4>
-          <span class="badge {% if is_connected %}bg-success status-connected{% else %}bg-danger status-disconnected{% endif %} px-3 py-2">
-            <span class="status-indicator"></span>
+          <h4 class="mb-0">
+            <i class="bi bi-database"></i> Database Connection
+          </h4>
+          <span
+            class="badge {% if is_connected %}bg-success status-connected{% else %}bg-danger status-disconnected{% endif %} px-3 py-2"
+          >
             {% if is_connected %}
-              Connected ({{ total_tables }} tables)
-            {% else %}
-              Not Connected
-            {% endif %}
+            <i class="bi bi-plug-fill me-1"></i>Connected ({{ total_tables }}
+            tables) {% else %} <i class="bi bi-plug me-1"></i>Not Connected {%
+            endif %}
           </span>
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-bold text-muted small">Current Database URI:</label>
-          <div class="db-url-display">{{ current_db_url or 'Not connected' }}</div>
+          <label class="form-label fw-bold text-muted small"
+            >Current Database URI:</label
+          >
+          <div class="db-url-display">
+            {{ current_db_url or 'Not connected' }}
+          </div>
         </div>
 
         <!-- Collapsible DB Form -->
         <div class="mb-3">
-          <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#dbFormCollapse">
+          <button
+            class="btn btn-outline-primary btn-sm"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#dbFormCollapse"
+          >
             <i class="bi bi-gear"></i> Configure Database Connection
           </button>
         </div>
@@ -302,7 +343,12 @@
             <div class="row g-3 mb-3">
               <div class="col-md-6">
                 <label for="db_type" class="form-label">Database Type</label>
-                <select class="form-select" id="db_type" name="db_type" onchange="updateDbUrl()">
+                <select
+                  class="form-select"
+                  id="db_type"
+                  name="db_type"
+                  onchange="updateDbUrl()"
+                >
                   <option value="mysql">MySQL</option>
                   <option value="postgresql">PostgreSQL</option>
                   <option value="mariadb">MariaDB</option>
@@ -311,31 +357,61 @@
 
               <div class="col-md-6">
                 <label for="host" class="form-label">Host</label>
-                <input type="text" class="form-control" id="host" name="host"
-                       placeholder="127.0.0.1:3306" value="127.0.0.1:3306" oninput="updateDbUrl()">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="host"
+                  name="host"
+                  placeholder="127.0.0.1:3306"
+                  value="127.0.0.1:3306"
+                  oninput="updateDbUrl()"
+                />
               </div>
 
               <div class="col-md-6">
                 <label for="user" class="form-label">Username</label>
-                <input type="text" class="form-control" id="user" name="user"
-                       placeholder="root" value="root" oninput="updateDbUrl()">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="user"
+                  name="user"
+                  placeholder="root"
+                  value="root"
+                  oninput="updateDbUrl()"
+                />
               </div>
 
               <div class="col-md-6">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password"
-                       placeholder="password" value="root" oninput="updateDbUrl()">
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  placeholder="password"
+                  value="root"
+                  oninput="updateDbUrl()"
+                />
               </div>
 
               <div class="col-12">
                 <label for="db_name" class="form-label">Database Name</label>
-                <input type="text" class="form-control" id="db_name" name="db_name"
-                       placeholder="my_database" value="omniflow_hris" oninput="updateDbUrl()">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="db_name"
+                  name="db_name"
+                  placeholder="my_database"
+                  value="omniflow_hris"
+                  oninput="updateDbUrl()"
+                />
               </div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label fw-bold text-muted small">Preview Database URI:</label>
+              <label class="form-label fw-bold text-muted small"
+                >Preview Database URI:</label
+              >
               <div class="db-url-display" id="previewDbUrl"></div>
             </div>
 
@@ -347,14 +423,25 @@
       </div>
 
       <!-- Query Section -->
-      <div class="content-section query-section {% if not is_connected %}disabled{% endif %}">
-        <h4 class="mb-3"><i class="bi bi-question-circle"></i> Masukkan Pertanyaan Anda</h4>
+      <div
+        class="content-section query-section {% if not is_connected %}disabled{% endif %}"
+      >
+        <h4 class="mb-3">
+          <i class="bi bi-question-circle"></i> Masukkan Pertanyaan Anda
+        </h4>
 
         <form action="/" method="POST" id="queryForm" onsubmit="showLoading()">
           <div class="mb-3">
-            <textarea class="form-control" id="question" name="question" rows="4"
-                      placeholder="Contoh: Tampilkan 10 users pertama, atau Apa saja tabel yang ada di database?"
-                      required>{{ question if question }}</textarea>
+            <textarea
+              class="form-control"
+              id="question"
+              name="question"
+              rows="4"
+              placeholder="Contoh: Tampilkan 10 users pertama, atau Apa saja tabel yang ada di database?"
+              required
+            >
+{{ question if question }}</textarea
+            >
           </div>
           <button type="submit" class="btn btn-gradient btn-lg" id="submitBtn">
             <i class="bi bi-send"></i> Kirim Pertanyaan
@@ -368,14 +455,17 @@
         <!-- Display Question -->
         {% if question %}
         <div class="alert alert-info">
-          <strong><i class="bi bi-chat-quote"></i> Pertanyaan:</strong> {{ question }}
+          <strong><i class="bi bi-chat-quote"></i> Pertanyaan:</strong> {{
+          question }}
         </div>
         {% endif %}
 
         <!-- Display Intent -->
         {% if intent %}
         <div class="mb-3">
-          <span class="badge {% if intent.lower() == 'query' %}bg-primary{% else %}bg-secondary{% endif %} fs-6 px-3 py-2">
+          <span
+            class="badge {% if intent.lower() == 'query' %}bg-primary{% else %}bg-secondary{% endif %} fs-6 px-3 py-2"
+          >
             <i class="bi bi-tag"></i> {{ intent.upper() }}
           </span>
         </div>
@@ -383,51 +473,49 @@
 
         <!-- Query Result -->
         {% if result.type == 'query' %}
-          <!-- SQL Query Display -->
-          {% if result.sql %}
-          <div class="mb-4">
-            <h5><i class="bi bi-code-square"></i> SQL Query yang dihasilkan:</h5>
-            <div class="sql-box">{{ result.sql }}</div>
-          </div>
-          {% endif %}
-
-          <!-- Query Success -->
-          {% if result.success %}
-            {% if result.data %}
-            <div>
-              <h5><i class="bi bi-table"></i> Hasil Query:</h5>
-              <div class="table-responsive">
-                {{ result.data|safe }}
-              </div>
-              <p class="text-muted mt-2">
-                <i class="bi bi-info-circle"></i> Jumlah baris: <strong>{{ result.row_count }}</strong>
-              </p>
-            </div>
-            {% elif result.message %}
-            <div class="alert alert-success">
-              <i class="bi bi-check-circle"></i> {{ result.message }}
-            </div>
-            {% endif %}
-          {% else %}
-            <div class="alert alert-danger">
-              <i class="bi bi-x-circle"></i> <strong>Error Eksekusi:</strong> {{ result.error }}
-            </div>
-          {% endif %}
+        <!-- SQL Query Display -->
+        {% if result.sql %}
+        <div class="mb-4">
+          <h5><i class="bi bi-code-square"></i> SQL Query yang dihasilkan:</h5>
+          <div class="sql-box">{{ result.sql }}</div>
+        </div>
         {% endif %}
+
+        <!-- Query Success -->
+        {% if result.success %} {% if result.data %}
+        <div>
+          <h5><i class="bi bi-table"></i> Hasil Query:</h5>
+          <div class="table-responsive">{{ result.data|safe }}</div>
+          <p class="text-muted mt-2">
+            <i class="bi bi-info-circle"></i> Jumlah baris:
+            <strong>{{ result.row_count }}</strong>
+          </p>
+        </div>
+        {% elif result.message %}
+        <div class="alert alert-success">
+          <i class="bi bi-check-circle"></i> {{ result.message }}
+        </div>
+        {% endif %} {% else %}
+        <div class="alert alert-danger">
+          <i class="bi bi-x-circle"></i> <strong>Error Eksekusi:</strong> {{
+          result.error }}
+        </div>
+        {% endif %} {% endif %}
 
         <!-- Schema Info Result -->
-        {% if result.type == 'schema_info' %}
-          {% if result.info %}
-          <div>
-            <h5><i class="bi bi-info-circle"></i> Informasi Schema:</h5>
-            <div class="markdown-content" id="schemaInfoContent">{{ result.info }}</div>
+        {% if result.type == 'schema_info' %} {% if result.info %}
+        <div>
+          <h5><i class="bi bi-info-circle"></i> Informasi Schema:</h5>
+          <div class="markdown-content" id="schemaInfoContent">
+            {{ result.info }}
           </div>
-          {% elif result.error %}
-          <div class="alert alert-danger">
-            <i class="bi bi-x-circle"></i> <strong>Error:</strong> {{ result.error }}
-          </div>
-          {% endif %}
-        {% endif %}
+        </div>
+        {% elif result.error %}
+        <div class="alert alert-danger">
+          <i class="bi bi-x-circle"></i> <strong>Error:</strong> {{ result.error
+          }}
+        </div>
+        {% endif %} {% endif %}
 
         <!-- Unknown Intent -->
         {% if result.error and not result.type %}
@@ -457,56 +545,56 @@
         breaks: true,
         gfm: true,
         headerIds: false,
-        mangle: false
+        mangle: false,
       });
 
       // Driver mapping for database types
       const driverMap = {
-        mysql: 'mysql+pymysql',
-        postgresql: 'postgresql+psycopg2',
-        mariadb: 'mysql+pymysql'
+        mysql: "mysql+pymysql",
+        postgresql: "postgresql+psycopg2",
+        mariadb: "mysql+pymysql",
       };
 
       // Show loading overlay
       function showLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        const submitBtn = document.getElementById('submitBtn');
+        const overlay = document.getElementById("loadingOverlay");
+        const submitBtn = document.getElementById("submitBtn");
 
-        overlay.classList.add('active');
+        overlay.classList.add("active");
         submitBtn.disabled = true;
 
         // Auto-hide after 60 seconds as fallback
-        setTimeout(function() {
+        setTimeout(function () {
           hideLoading();
         }, 60000);
       }
 
       // Hide loading overlay
       function hideLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        const submitBtn = document.getElementById('submitBtn');
+        const overlay = document.getElementById("loadingOverlay");
+        const submitBtn = document.getElementById("submitBtn");
 
-        overlay.classList.remove('active');
+        overlay.classList.remove("active");
         if (submitBtn) submitBtn.disabled = false;
       }
 
       // Update database URL preview in realtime
       function updateDbUrl() {
-        const dbType = document.getElementById('db_type').value;
-        const host = document.getElementById('host').value;
-        const user = document.getElementById('user').value;
-        const password = document.getElementById('password').value;
-        const dbName = document.getElementById('db_name').value;
+        const dbType = document.getElementById("db_type").value;
+        const host = document.getElementById("host").value;
+        const user = document.getElementById("user").value;
+        const password = document.getElementById("password").value;
+        const dbName = document.getElementById("db_name").value;
 
-        const driver = driverMap[dbType] || 'mysql+pymysql';
+        const driver = driverMap[dbType] || "mysql+pymysql";
         const dbUrl = `${driver}://${user}:${password}@${host}/${dbName}`;
 
-        document.getElementById('previewDbUrl').textContent = dbUrl;
+        document.getElementById("previewDbUrl").textContent = dbUrl;
       }
 
       // Render markdown content
       function renderMarkdown() {
-        const schemaInfo = document.getElementById('schemaInfoContent');
+        const schemaInfo = document.getElementById("schemaInfoContent");
         if (schemaInfo && schemaInfo.textContent) {
           const markdownText = schemaInfo.textContent;
           schemaInfo.innerHTML = marked.parse(markdownText);
@@ -516,27 +604,39 @@
       // Initialize DataTables
       function initializeDataTables() {
         // Find all tables generated by pandas
-        const tables = document.querySelectorAll('table.dataframe, table.table');
+        const tables = document.querySelectorAll(
+          "table.dataframe, table.table"
+        );
 
         tables.forEach((table, index) => {
           // Add Bootstrap classes
-          table.classList.add('table', 'table-striped', 'table-hover', 'table-bordered');
+          table.classList.add(
+            "table",
+            "table-striped",
+            "table-hover",
+            "table-bordered"
+          );
 
           // Add unique ID if not present
           if (!table.id) {
-            table.id = 'resultTable' + index;
+            table.id = "resultTable" + index;
           }
 
           // Check if already initialized
-          if ($.fn.DataTable.isDataTable('#' + table.id)) {
-            $('#' + table.id).DataTable().destroy();
+          if ($.fn.DataTable.isDataTable("#" + table.id)) {
+            $("#" + table.id)
+              .DataTable()
+              .destroy();
           }
 
           // Initialize DataTable
-          $('#' + table.id).DataTable({
+          $("#" + table.id).DataTable({
             responsive: true,
             pageLength: 25,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            lengthMenu: [
+              [10, 25, 50, 100, -1],
+              [10, 25, 50, 100, "All"],
+            ],
             scrollX: true,
             scrollCollapse: true,
             autoWidth: false,
@@ -550,26 +650,27 @@
                 first: "Pertama",
                 last: "Terakhir",
                 next: "Selanjutnya",
-                previous: "Sebelumnya"
+                previous: "Sebelumnya",
               },
               emptyTable: "Tidak ada data",
-              zeroRecords: "Tidak ada data yang cocok"
+              zeroRecords: "Tidak ada data yang cocok",
             },
             columnDefs: [
               {
-                targets: '_all',
-                className: 'text-nowrap'
-              }
+                targets: "_all",
+                className: "text-nowrap",
+              },
             ],
-            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-                 '<"row"<"col-sm-12"tr>>' +
-                 '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+            dom:
+              '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+              '<"row"<"col-sm-12"tr>>' +
+              '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
           });
         });
       }
 
       // Initialize on page load
-      $(document).ready(function() {
+      $(document).ready(function () {
         updateDbUrl();
         renderMarkdown();
         initializeDataTables();

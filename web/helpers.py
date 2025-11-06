@@ -445,7 +445,7 @@ Response:"""
                 {"role": "user", "content": user_prompt},
             ],
             temperature=0.3,  # Moderate temp for natural language
-            max_tokens=500,
+            max_tokens=1000,
         )
 
         info = response.choices[0].message.content.strip()
